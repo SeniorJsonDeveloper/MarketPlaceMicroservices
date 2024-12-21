@@ -1,0 +1,25 @@
+server:
+  port: 8084
+spring:
+  config:
+    import: optional:file:.env[.properties]
+
+  kafka:
+    consumer:
+      group-id: 1
+    bootstrap-servers: localhost:9092
+  main:
+    allow-bean-definition-overriding: true
+
+
+cache:
+  redis:
+    host: localhost
+    port: 6379
+
+
+web:
+  integration:
+    paymentsUrl: http://localhost:8083/api/payment
+    warehouseUrl: http://localhost:8081/api/warehouse
+    pricesUrl: http://localhost:8082/api/prices
