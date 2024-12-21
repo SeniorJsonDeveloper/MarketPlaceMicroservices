@@ -8,8 +8,11 @@ spring:
     consumer:
       group-id: 1
     bootstrap-servers: localhost:9092
+    topic:
+      name: OrdersToNotifications
   main:
     allow-bean-definition-overriding: true
+
 
 
 cache:
