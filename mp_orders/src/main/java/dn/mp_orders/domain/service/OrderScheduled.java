@@ -13,7 +13,6 @@ public class OrderScheduled {
 
 
 
-    @Scheduled(fixedRate = 3600)
     public void scheduled() {
         orderService.deleteAllOrders();
 

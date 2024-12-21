@@ -17,8 +17,8 @@ public class OrderDto {
 
     private String message;
 
-//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-//    private LocalDateTime createdAt;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
 
     private Boolean status;
 
