@@ -24,6 +24,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -54,6 +55,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @SneakyThrows
+    @Transactional
     public void sendMessage(OrderDto orderDto) {
         Map<String, Object> message = new HashMap<>();
         var id = orderDto.getId();
