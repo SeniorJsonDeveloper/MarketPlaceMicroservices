@@ -9,7 +9,7 @@ spring:
       group-id: 1
     bootstrap-servers: localhost:9092
     topic:
-      name: OrdersToNotifications
+      name: OrderToNotifications
   main:
     allow-bean-definition-overriding: true
 
@@ -26,3 +26,4 @@ web:
     paymentsUrl: http://localhost:8083/api/payment
     warehouseUrl: http://localhost:8081/api/warehouse
     pricesUrl: http://localhost:8082/api/prices
+

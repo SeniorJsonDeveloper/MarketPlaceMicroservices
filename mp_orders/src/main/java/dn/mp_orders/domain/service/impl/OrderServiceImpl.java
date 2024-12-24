@@ -58,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
         Map<String, Object> message = new HashMap<>();
         var id = orderDto.getId();
         KafkaDto kafkaDto = new KafkaDto();
-        kafkaDto.setMessage("Ваш заказ создан");
+        kafkaDto.setMessage(orderDto.getMessage());
         kafkaDto.setStatus(Status.СОЗДАН.toString());
         kafkaDto.setCreatedAt(true);
         message.put(id, kafkaDto);
@@ -87,12 +87,14 @@ public class OrderServiceImpl implements OrderService {
         order.setId(UUID.randomUUID().toString());
         order.setName(orderDto.getName());
         order.setStatus(true);
+        order.setMessage(orderDto.getMessage());
         orderRepository.save(order);
         OrderDto dto = new OrderDto();
         dto.setId(order.getId());
         dto.setName(order.getName());
         dto.setStatus(order.getStatus());
         dto.setCreatedAt(LocalDateTime.now());
+        dto.setMessage(orderDto.getMessage());
         sendMessage(dto);
         return dto;
     }

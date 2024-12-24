@@ -24,6 +24,8 @@ public class OrderEntity implements Serializable {
 
     private Boolean status;
 
+    private String message;
+
     private BigDecimal price;
 
     private String userId;

@@ -11,7 +11,6 @@ import org.springframework.web.context.request.WebRequest;
 import java.lang.reflect.InaccessibleObjectException;
 
 @RestControllerAdvice
-@Slf4j
 public class GlobalExceptionHandler  {
 
 
