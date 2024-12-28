@@ -34,6 +34,12 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("redis.clients:jedis:5.2.0")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    annotationProcessor ("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    // https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa
+
+
     // https://mvnrepository.com/artifact/org.mapstruct/mapstruct
 //    implementation("org.mapstruct:mapstruct:1.6.2")
     // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor

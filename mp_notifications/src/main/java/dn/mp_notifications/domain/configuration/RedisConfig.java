@@ -1,6 +1,6 @@
-package dn.mp_orders.domain.configuration.redis;
+package dn.mp_notifications.domain.configuration;
 
-import dn.mp_orders.domain.OrderEntity;
+import dn.mp_notifications.domain.entity.Notification;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.*;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 
@@ -44,11 +47,11 @@ public class RedisConfig {
     @Bean
     public RedisCacheManagerBuilderCustomizer cacheManagerBuilderCustomizer() {
         return (builder) -> builder
-                .withCacheConfiguration("orderAfterCreate",
+                .withCacheConfiguration("notificationAfterCreate",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(5)))
-                .withCacheConfiguration("orderById",
+                .withCacheConfiguration("notificationById",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
-                .withCacheConfiguration("orders",
+                .withCacheConfiguration("notifications",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10))
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                                         .fromSerializer(new GenericJackson2JsonRedisSerializer())));
@@ -65,7 +68,7 @@ public class RedisConfig {
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
-                                .fromSerializer(new Jackson2JsonRedisSerializer<>(OrderEntity.class)));
+                        .fromSerializer(new Jackson2JsonRedisSerializer<>(Notification.class)));
     }
 
 }
