@@ -1,23 +1,17 @@
 package dn.mp_notifications.api;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class OrderDto {
 
     private String message;
 
-    private boolean success;
-
-    private String orderId;
-
-    private String orderStatus;
+    private String name;
 
 
 }

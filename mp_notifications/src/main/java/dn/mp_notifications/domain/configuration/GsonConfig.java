@@ -1,4 +1,4 @@
-package dn.mp_notifications.domain;
+package dn.mp_notifications.domain.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

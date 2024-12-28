@@ -1,0 +1,21 @@
+
+spring:
+  cloud:
+    gateway:
+      mvc:
+        routes:
+        - id: orders-route
+          uri: http://localhost:8084
+          predicates:
+            - Path:=/api/v1/order/**
+          filters:
+            - StringPrefix=1
+        - id: notifications-route
+          uri: http://localhost:8085
+          predicates:
+            - Path:=/api/v1/notifications/**
+          filters:
+            - StringPrefix=1
+
+server:
+  port: 3000

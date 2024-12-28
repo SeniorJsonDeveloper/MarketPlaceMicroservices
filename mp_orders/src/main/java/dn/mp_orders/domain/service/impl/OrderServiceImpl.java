@@ -68,10 +68,10 @@ public class OrderServiceImpl implements OrderService {
         CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(topicName,kafkaMessage);
         future.whenComplete((r, e) -> {
             if (e == null) {
-                log.info("KAFKA DATA: {},{0} {}", r.getRecordMetadata().offset(), message);
+                log.info("KAFKA DATA: {}, {}", r.getRecordMetadata().offset(), message);
             }
             else {
-                log.info("CANT SEND MESSAGE: {},{0} {}", e.getMessage(), message);
+                log.info("CANT SEND MESSAGE: {}, {}", e.getMessage(), message);
             }
         });
 
@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Cacheable(cacheNames = "orderAfterCreate", key = "#orderDto.id", condition = "#orderDto.id!=null")
-    @SneakyThrows
+    @Transactional
     public OrderDto save(OrderDto orderDto) {
         OrderEntity order = new OrderEntity();
         order.setId(UUID.randomUUID().toString());
