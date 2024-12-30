@@ -7,11 +7,15 @@ import java.util.List;
 
 public interface Mappable <E,D>{
 
-//    E fromDto(D dto);
-//
-//    D toDto(E dto);
-//
-//    List<D> toDto(List<E> dto);
-//
-//    List<E> fromDto(List<D> dto);
+    E fromDto(D dto);
+
+    D toDto(E dto);
+
+    List<D> toDto(List<E> dto);
+
+    List<E> fromDto(List<D> dto);
+
+    Iterable<E> toIterableEntiry(Iterable<D> dto);
+
+    Iterable<D> toIterable(Iterable<E> dto);
 }

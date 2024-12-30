@@ -8,8 +8,12 @@ spring:
     consumer:
       group-id: 1
     bootstrap-servers: localhost:9092
+    topic:
+      name: OrderToNotifications
   main:
     allow-bean-definition-overriding: true
+
+
 
 
 cache:
@@ -23,3 +27,4 @@ web:
     paymentsUrl: http://localhost:8083/api/payment
     warehouseUrl: http://localhost:8081/api/warehouse
     pricesUrl: http://localhost:8082/api/prices
+
