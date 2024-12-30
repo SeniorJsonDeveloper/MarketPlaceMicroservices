@@ -1,0 +1,48 @@
+server:
+  port: 8085
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  mail:
+    port: 587
+    host: smtp.gmail.com
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  kafka:
+    listener:
+      ack-mode: manual
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: 1
+      auto-offset-reset: earliest
+    topic:
+      name: OrderToNotifications
+cache:
+  redis:
+    host: localhost
+    port: 6379
+
+
+
+
+
+
+
+
+
+
+
+
+integration:
+  twilio:
+    sid:
+    number:
+    token:
+
+

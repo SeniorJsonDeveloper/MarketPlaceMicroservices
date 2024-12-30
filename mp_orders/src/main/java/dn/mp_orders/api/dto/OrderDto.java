@@ -19,10 +19,8 @@ public class OrderDto {
 
     private String message;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime createdAt;
+    private String status;
 
-    private Boolean status;
 
     private BigDecimal price;
 

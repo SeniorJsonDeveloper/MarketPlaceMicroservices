@@ -20,9 +20,9 @@ public class OrderEntity implements Serializable {
 
     private String name;
 
-    private LocalDateTime createdAt;
+    private String createdAt;
 
-    private Boolean status;
+    private String status;
 
     private String message;
 

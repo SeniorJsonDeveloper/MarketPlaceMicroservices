@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.DeserializerFactory;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import dn.mp_orders.api.dto.KafkaDto;
 import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.api.dto.Status;
@@ -46,7 +47,9 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ObjectMapper objectMapper;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
 
     private final OrderMapper orderMapper;
@@ -61,11 +64,26 @@ public class OrderServiceImpl implements OrderService {
         var id = orderDto.getId();
         KafkaDto kafkaDto = new KafkaDto();
         kafkaDto.setMessage(orderDto.getMessage());
-        kafkaDto.setStatus(Status.СОЗДАН.toString());
-        kafkaDto.setCreatedAt(true);
+        kafkaDto.setName(orderDto.getName());
+        kafkaDto.setStatus(orderDto.getStatus());
         message.put(id, kafkaDto);
-        String kafkaMessage = gson.toJson(message);
-        CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send(topicName,kafkaMessage);
+
+        String kafkaDtoName = objectMapper.convertValue(kafkaDto, KafkaDto.class).getName();
+        String kafkaDtoMessage = objectMapper.convertValue(kafkaDto, KafkaDto.class).getMessage();
+        String kafkaDtoCreatedAt = objectMapper.convertValue(kafkaDto, KafkaDto.class).getStatus();
+        kafkaDto.setMessage(kafkaDtoMessage);
+        kafkaDto.setStatus(kafkaDtoCreatedAt);
+        kafkaDto.setName(kafkaDtoName);
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("message", kafkaDto.getMessage());
+        jsonObject.addProperty("name", kafkaDto.getName());
+        jsonObject.addProperty("status",kafkaDto.getStatus());
+        var result = gson.toJson(jsonObject);
+
+        log.info("result: {}", result);
+
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(topicName,result);
         future.whenComplete((r, e) -> {
             if (e == null) {
                 log.info("KAFKA DATA: {}, {}", r.getRecordMetadata().offset(), message);
@@ -88,14 +106,14 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity order = new OrderEntity();
         order.setId(UUID.randomUUID().toString());
         order.setName(orderDto.getName());
-        order.setStatus(true);
+        order.setStatus(order.getStatus());
         order.setMessage(orderDto.getMessage());
         orderRepository.save(order);
         OrderDto dto = new OrderDto();
         dto.setId(order.getId());
         dto.setName(order.getName());
-        dto.setStatus(order.getStatus());
-        dto.setCreatedAt(LocalDateTime.now());
+        dto.setName(order.getName());
+        dto.setStatus(orderDto.getStatus());
         dto.setMessage(orderDto.getMessage());
         sendMessage(dto);
         return dto;

@@ -13,5 +13,7 @@ public class OrderDto {
 
     private String name;
 
+    private String status;
+
 
 }

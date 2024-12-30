@@ -7,7 +7,16 @@ public class KafkaDto {
 
     private String message;
 
-    private Boolean createdAt;
-
     private String status;
+
+    private String name;
+
+    @Override
+    public String toString() {
+        return "KafkaDto{" +
+                "message='" + message + '\'' +
+                ", status=" + status +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
