@@ -36,16 +36,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class KafkaListenerConfig {
 
-    private final Map<String, KafkaHandler> orders;
-
-    private final Gson gson;
-
-    private final ObjectMapper objectMapper;
-
 
     @SneakyThrows
     @KafkaListener(topics = "OrderToNotifications", groupId = "1")
-    public void listen(final String payload,
+    public void listen(@Payload final String payload,
                        final Acknowledgment acknowledgment) {
         log.info("Received payload: {}", payload);
         try {
@@ -53,6 +47,7 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("message")
                     .getAsString();
+
             String name = JsonParser.parseString(payload)
                     .getAsJsonObject()
                     .get("name")
@@ -62,13 +57,12 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("status")
                     .getAsString();
+
             OrderDto dto = new OrderDto();
             dto.setMessage(message);
             dto.setName(name);
             dto.setStatus(status);
-            log.info("Received message: {}", dto.getMessage());
-            log.info("Received name: {}", dto.getName());
-            log.info("Received status: {}", dto.getStatus());
+            log.info("Received message: {}, Received name: {}, Received status: {}", dto.getMessage(), dto.getName(), dto.getStatus());
         }catch (Exception e){
             log.error("Error parsing json payload", e);
         }

@@ -2,20 +2,19 @@
 spring:
   cloud:
     gateway:
-      mvc:
-        routes:
+       routes:
         - id: orders-route
           uri: http://localhost:8084
           predicates:
-            - Path:=/api/v1/order/**
+            - Path=/order-api/**
           filters:
-            - StringPrefix=1
+            - StripPrefix=1
         - id: notifications-route
           uri: http://localhost:8085
           predicates:
-            - Path:=/api/v1/notifications/**
+            - Path=/notifications-api/**
           filters:
-            - StringPrefix=1
+            - StripPrefix=1
 
 server:
   port: 3000
