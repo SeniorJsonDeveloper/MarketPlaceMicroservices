@@ -4,6 +4,7 @@ import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.domain.entity.NotificationDto;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -19,6 +20,8 @@ public interface SenderService {
     Iterable<Notification> findAllNotifications();
 
     NotificationDto findNotificationById(String id);
+
+    void deleteNotification(List<Notification> notifications);
 
 
 
