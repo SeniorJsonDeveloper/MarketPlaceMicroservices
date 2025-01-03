@@ -12,7 +12,7 @@ public class OrderScheduled {
     private final OrderService orderService;
 
 
-
+//    @Scheduled(fixedRate = 5000)
     public void scheduled() {
         orderService.deleteAllOrders();
 

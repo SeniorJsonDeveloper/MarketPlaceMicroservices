@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class KafkaDto {
 
+    private String id;
+
     private String message;
 
     private String status;

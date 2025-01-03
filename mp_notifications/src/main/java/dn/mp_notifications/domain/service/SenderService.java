@@ -1,12 +1,26 @@
 package dn.mp_notifications.domain.service;
 
+import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.domain.entity.NotificationDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 
 public interface SenderService {
 
-    Notification create(final Notification notificationDto);
+    String generateCode();
+
+    NotificationDto sendNotification(MessageDto messageDto, String orderId);
+
+
+    String sendSmsCode(String phoneNumber);
+
+    Iterable<Notification> findAllNotifications();
+
+    NotificationDto findNotificationById(String id);
+
+
+
+
 }

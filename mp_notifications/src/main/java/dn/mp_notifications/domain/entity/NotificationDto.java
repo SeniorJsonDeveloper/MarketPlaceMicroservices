@@ -13,6 +13,8 @@ public class NotificationDto {
 
     private String userId;
 
+    private String orderId;
+
     private String senderId;
 
     private String message;

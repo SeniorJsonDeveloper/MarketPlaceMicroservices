@@ -21,7 +21,6 @@ public class OrderDto {
 
     private String status;
 
-
     private BigDecimal price;
 
     private String userId;

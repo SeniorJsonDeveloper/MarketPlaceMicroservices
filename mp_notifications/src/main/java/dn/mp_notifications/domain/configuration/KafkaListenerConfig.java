@@ -1,46 +1,28 @@
 package dn.mp_notifications.domain.configuration;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import dn.mp_notifications.api.OrderDto;
-import dn.mp_notifications.domain.service.KafkaHandler;
+import dn.mp_notifications.api.dto.MessageDto;
+import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.json.simple.parser.JSONParser;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.web.JsonPath;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.json.simple.*;
-
-import java.io.File;
-import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.lang.Nullable;
+import org.springframework.web.client.RestClient;
 
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
 public class KafkaListenerConfig {
 
+    private final SenderService senderService;
+
+    private final RestClient restClient;
+
 
     @SneakyThrows
     @KafkaListener(topics = "OrderToNotifications", groupId = "1")
-    public void listen(@Payload final String payload,
-                       final Acknowledgment acknowledgment) {
+    public void listen(final String payload) {
         log.info("Received payload: {}", payload);
         try {
             String message = JsonParser.parseString(payload)
@@ -57,12 +39,21 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("status")
                     .getAsString();
-
-            OrderDto dto = new OrderDto();
+            String id = JsonParser.parseString(payload)
+                    .getAsJsonObject()
+                    .get("id")
+                    .getAsString();
+            MessageDto dto = new MessageDto();
+            dto.setId(id);
             dto.setMessage(message);
             dto.setName(name);
             dto.setStatus(status);
-            log.info("Received message: {}, Received name: {}, Received status: {}", dto.getMessage(), dto.getName(), dto.getStatus());
+            senderService.sendNotification(dto,dto.getId());
+            log.info("Received message: {}, " +
+                     "Received name: {}, " +
+                    "Received status: {} "+
+                    "ReceivedId:{} ", dto.getMessage(), dto.getName(), dto.getStatus(),dto.getId());
+
         }catch (Exception e){
             log.error("Error parsing json payload", e);
         }

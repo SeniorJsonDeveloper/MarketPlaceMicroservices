@@ -1,5 +1,7 @@
 package dn.mp_notifications.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,13 +21,19 @@ public class Notification {
 
     private String title;
 
+    @JsonIgnore
     private String userId;
 
+    @JsonIgnore
     private String senderId;
 
     private String message;
 
+    @JsonFormat(pattern = "yyyy:Mm:dd")
     private LocalDateTime createdAt;
+
+
+    private String orderId;
 
 
 }

@@ -15,7 +15,7 @@ public interface OrderService {
 
     void deleteAllOrders();
 
-    OrderDto update(String id, OrderDto order);
+    void updateOrderStatus(String id, OrderDto order);
 
     Iterable<OrderDto> getAllOrders();
 

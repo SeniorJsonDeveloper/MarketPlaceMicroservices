@@ -51,7 +51,6 @@ public class OrderServiceImpl implements OrderService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-
     private final OrderMapper orderMapper;
 
     private final Gson gson;
@@ -79,6 +78,7 @@ public class OrderServiceImpl implements OrderService {
         jsonObject.addProperty("message", kafkaDto.getMessage());
         jsonObject.addProperty("name", kafkaDto.getName());
         jsonObject.addProperty("status",kafkaDto.getStatus());
+        jsonObject.addProperty("id", id);
         var result = gson.toJson(jsonObject);
 
         log.info("result: {}", result);
@@ -109,12 +109,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(order.getStatus());
         order.setMessage(orderDto.getMessage());
         orderRepository.save(order);
-        OrderDto dto = new OrderDto();
-        dto.setId(order.getId());
-        dto.setName(order.getName());
-        dto.setName(order.getName());
-        dto.setStatus(orderDto.getStatus());
-        dto.setMessage(orderDto.getMessage());
+        OrderDto dto = orderMapper.toDto(order);
         sendMessage(dto);
         return dto;
     }
@@ -137,13 +132,17 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @CachePut(cacheNames = "orderAfterUpdate")
-    public OrderDto update(String id, OrderDto order) {
-        OrderEntity requireOrder = orderMapper.fromDto(findById(id));
-        if (!requireOrder.getId().equals(id)) {
-            throw new OrderNotFound("Order not found");
-        }
-        return orderMapper.toDto(orderRepository.save(requireOrder));
+    @Transactional
+    public void updateOrderStatus(String id, OrderDto order) {
+        orderRepository.findById(id).ifPresentOrElse(o->{
+                    o.setStatus(order.getStatus());
+                    orderRepository.save(o);
+                    sendMessage(orderMapper.toDto(o));
+                    log.info("UPDATED STATUS: {}", order.getStatus());
+                }, ()-> {
+                    throw new OrderNotFound("Order not found");
+                });
+
 
     }
 

@@ -36,4 +36,9 @@ public class OrderController {
         return orderService.getAllOrders();
     }
 
+    @PatchMapping("/edit/{id}")
+    public void editOrder(@PathVariable String id, @RequestBody OrderDto order) {
+        orderService.updateOrderStatus(id, order);
+    }
+
 }
