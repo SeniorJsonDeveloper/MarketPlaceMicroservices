@@ -2,6 +2,7 @@ package dn.mp_notifications.api.controller;
 
 import dn.mp_notifications.domain.entity.Notification;
 
+import dn.mp_notifications.domain.entity.NotificationDto;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,11 @@ public class NotificationController {
     @GetMapping()
     public Iterable<Notification> getNotifications() {
         return service.findAllNotifications();
+    }
+
+    @GetMapping("/{id}")
+    public NotificationDto getNotificationById(@PathVariable String id) {
+        return service.findNotificationById(id);
     }
 
 

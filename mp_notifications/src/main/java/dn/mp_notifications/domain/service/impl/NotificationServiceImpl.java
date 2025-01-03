@@ -5,7 +5,7 @@ import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.api.dto.mapper.NotificationMapper;
-import dn.mp_notifications.domain.NotFoundException;
+import dn.mp_notifications.api.exception.NotFoundException;
 import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.domain.entity.NotificationDto;
 import dn.mp_notifications.domain.repository.NotificationRepository;

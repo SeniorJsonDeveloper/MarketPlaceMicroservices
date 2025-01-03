@@ -1,9 +1,8 @@
-package dn.mp_notifications.domain;
+package dn.mp_notifications.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.Random;
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class NotFoundException extends RuntimeException {
 
