@@ -1,5 +1,7 @@
 package dn.mp_notifications.domain.service;
 import dn.mp_notifications.api.dto.MessageDto;
+import dn.mp_notifications.api.dto.NotificationDto;
+import dn.mp_notifications.api.dto.mapper.NotificationMapper;
 import dn.mp_notifications.domain.entity.Notification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,9 +17,11 @@ public class NotificationScheduler {
     private final SenderService senderService;
 
 
-
+    @Scheduled(fixedRate = 5000)
     public void clean(){
-//        List<Notification> notifications =(List<Notification>) senderService.findAllNotifications();
-//        senderService.deleteNotification(notifications);
+        List<Notification> notifications = senderService.mapToDtoEntity(senderService.getNotificationList());
+        senderService.deleteNotification(notifications);
+
+
     }
 }

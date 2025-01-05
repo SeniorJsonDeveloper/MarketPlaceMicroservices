@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
@@ -15,9 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@RedisHash("notificationZ")
+@RedisHash("notifications")
 public class Notification {
 
+    @Id
     private String id;
 
     private String title;
@@ -35,8 +37,6 @@ public class Notification {
     private LocalDateTime createdAt;
 
     private String orderId;
-
-    private MessageDto messageDto;
 
     private String status;
 

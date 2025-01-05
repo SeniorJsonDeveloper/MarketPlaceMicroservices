@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements SenderService{
+
 
     private final NotificationRepository notificationRepository;
 
@@ -121,7 +123,7 @@ public class NotificationServiceImpl implements SenderService{
     public void deleteNotification(List<Notification> notifications) {
 
 
-        notifications = (List<Notification>) notificationRepository.findAll();
+        notifications = mapToDtoEntity(getNotificationList());
         var result  =  notifications.stream()
                 .filter(notification -> !notification.getMessage()
                 .equals("Заказ создан!"))
@@ -152,6 +154,14 @@ public class NotificationServiceImpl implements SenderService{
     }
 
 
+
+    @Override
+    public List<NotificationDto> getNotificationList(){
+        return mapToDtoList(notificationRepository.findAll());
+
+    }
+
+
     public void sendAsyncNotification(MessageDto messageDto, String orderId) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.execute(() -> {
@@ -165,6 +175,78 @@ public class NotificationServiceImpl implements SenderService{
                 }
             });
         });
+    }
+
+    @Override
+    public List<NotificationDto> mapToDtoList(List<Notification> entities) {
+        if ( entities == null ) {
+            return null;
+        }
+
+        List<NotificationDto> list = new ArrayList<NotificationDto>( entities.size() );
+        for ( Notification notification : entities ) {
+            list.add( mapToDto( notification ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public NotificationDto mapToDto(Notification entity) {
+        if ( entity == null ) {
+            return null;
+        }
+
+        NotificationDto notificationDto = new NotificationDto();
+
+        notificationDto.setOrderId( entity.getOrderId() );
+        notificationDto.setStatus( entity.getStatus() );
+        notificationDto.setId( entity.getId() );
+        notificationDto.setTitle( entity.getTitle() );
+        notificationDto.setUserId( entity.getUserId() );
+        notificationDto.setSenderId( entity.getSenderId() );
+        notificationDto.setMessage( entity.getMessage() );
+        notificationDto.setCreatedAt( entity.getCreatedAt() );
+        notificationDto.setPageNumber( entity.getPageNumber() );
+        notificationDto.setPageSize( entity.getPageSize() );
+
+        return notificationDto;
+    }
+
+    @Override
+    public List<Notification> mapToDtoEntity(List<NotificationDto> entities) {
+        if ( entities == null ) {
+            return null;
+        }
+
+        List<Notification> list = new ArrayList<Notification>( entities.size() );
+        for ( NotificationDto notificationDto : entities ) {
+            list.add( notificationDtoToNotification( notificationDto ) );
+        }
+
+        return list;
+    }
+
+    @Override
+    public Notification notificationDtoToNotification(NotificationDto notificationDto) {
+        if ( notificationDto == null ) {
+            return null;
+        }
+
+        Notification.NotificationBuilder notification = Notification.builder();
+
+        notification.id( notificationDto.getId() );
+        notification.title( notificationDto.getTitle() );
+        notification.userId( notificationDto.getUserId() );
+        notification.senderId( notificationDto.getSenderId() );
+        notification.message( notificationDto.getMessage() );
+        notification.createdAt( notificationDto.getCreatedAt() );
+        notification.orderId( notificationDto.getOrderId() );
+        notification.status( notificationDto.getStatus() );
+        notification.pageNumber( notificationDto.getPageNumber() );
+        notification.pageSize( notificationDto.getPageSize() );
+
+        return notification.build();
     }
 
 }

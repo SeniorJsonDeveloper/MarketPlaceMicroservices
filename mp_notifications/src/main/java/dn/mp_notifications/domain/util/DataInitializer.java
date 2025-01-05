@@ -11,18 +11,18 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class DataInitializer implements CommandLineRunner {
+public class DataInitializer {
 
-    private final SenderService senderService;
-
-    @Override
-    public void run(String... args) throws Exception {
-        for(long i = 0; i <= 50; i++) {
-            Notification notification = new Notification();
-            notification.setId(UUID.randomUUID().toString());
-            notification.setTitle("Title"+i);
-            senderService.addToList(notification);
-
-        }
-    }
+//    private final SenderService senderService;
+//
+//    @Override
+//    public void run(String... args) throws Exception {
+//        for(long i = 0; i <= 50; i++) {
+//            Notification notification = new Notification();
+//            notification.setId(UUID.randomUUID().toString());
+//            notification.setTitle("Title"+i);
+//            senderService.addToList(notification);
+//
+//        }
+//    }
 }
