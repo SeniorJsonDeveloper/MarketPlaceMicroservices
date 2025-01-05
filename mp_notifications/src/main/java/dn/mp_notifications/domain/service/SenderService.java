@@ -1,11 +1,13 @@
 package dn.mp_notifications.domain.service;
 
 import dn.mp_notifications.api.dto.MessageDto;
+import dn.mp_notifications.api.dto.PageOutDto;
 import dn.mp_notifications.domain.entity.Notification;
-import dn.mp_notifications.domain.entity.NotificationDto;
+import dn.mp_notifications.api.dto.NotificationDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 
 public interface SenderService {
@@ -17,11 +19,15 @@ public interface SenderService {
 
     String sendSmsCode(String phoneNumber);
 
-    Iterable<Notification> findAllNotifications();
+    Page<Notification> findAllNotifications(NotificationDto notificationDto);
 
     NotificationDto findNotificationById(String id);
 
     void deleteNotification(List<Notification> notifications);
+
+    void addToList(Notification notification);
+
+    Page<NotificationDto> getPagedData(int pageNumber, int pageSize);
 
 
 

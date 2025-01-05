@@ -4,15 +4,23 @@ import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
 import dn.mp_notifications.api.dto.MessageDto;
+import dn.mp_notifications.api.dto.PageOutDto;
+import dn.mp_notifications.api.dto.PageResponseDTO;
 import dn.mp_notifications.api.dto.mapper.NotificationMapper;
 import dn.mp_notifications.api.exception.NotFoundException;
 import dn.mp_notifications.domain.entity.Notification;
-import dn.mp_notifications.domain.entity.NotificationDto;
+import dn.mp_notifications.api.dto.NotificationDto;
 import dn.mp_notifications.domain.repository.NotificationRepository;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -34,6 +43,8 @@ public class NotificationServiceImpl implements SenderService{
     private final NotificationRepository notificationRepository;
 
     private final NotificationMapper notificationMapper;
+
+    private final RedisTemplate<String, Object> redisTemplate;
 
 
 
@@ -72,6 +83,7 @@ public class NotificationServiceImpl implements SenderService{
         notification.setId(UUID.randomUUID().toString());
         notification.setMessage(order.getMessage());
         notification.setCreatedAt(LocalDateTime.now());
+        notification.setStatus(order.getStatus());
         notification.setTitle(order.getName());
         notification.setOrderId(orderId);
         notificationRepository.save(notification);
@@ -93,8 +105,8 @@ public class NotificationServiceImpl implements SenderService{
     }
 
     @Override
-    public Iterable<Notification> findAllNotifications() {
-        return notificationRepository.findAll();
+    public Page<Notification> findAllNotifications(NotificationDto notificationDto) {
+        return notificationRepository.findWithPage(notificationDto.getPageOut().getPageRequest());
     }
 
     @Override
@@ -108,13 +120,35 @@ public class NotificationServiceImpl implements SenderService{
     @Override
     public void deleteNotification(List<Notification> notifications) {
 
+
         notifications = (List<Notification>) notificationRepository.findAll();
         var result  =  notifications.stream()
-                .filter(notification -> notification.getMessage()
-                .equals("Доставлен"))
+                .filter(notification -> !notification.getMessage()
+                .equals("Заказ создан!"))
                 .toList();
         log.info("Notifications deleted: {}", result);
         notificationRepository.deleteAll(result);
+    }
+
+    @Override
+    public void addToList(Notification notification) {
+        redisTemplate.opsForList().rightPush("notifications", notification);
+    }
+
+    @Override
+    @SneakyThrows
+    public Page<NotificationDto> getPagedData(int pageNumber, int pageSize) {
+        long totalElements = redisTemplate.opsForList().size("notifications");
+        long startIndex = (long) (pageNumber - 1) * pageSize;
+        long endIndex = Math.min(startIndex + pageSize-1, totalElements-1);
+        List<Object> listRange = redisTemplate.opsForList()
+                .range("notifications",startIndex,endIndex);
+        assert listRange != null;
+        List<Notification> notifications = listRange.stream()
+                .map(e->(Notification) e)
+                .toList();
+        var mappedNotifications = notificationMapper.mapToDtoList(notifications);
+        return new PageImpl<>(mappedNotifications, PageRequest.of(pageNumber-1, pageSize), totalElements);
     }
 
 

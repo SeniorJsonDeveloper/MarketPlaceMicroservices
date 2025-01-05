@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity order = new OrderEntity();
         order.setId(UUID.randomUUID().toString());
         order.setName(orderDto.getName());
-        order.setStatus(order.getStatus());
+        order.setStatus(orderDto.getStatus());
         order.setMessage(orderDto.getMessage());
         orderRepository.save(order);
         OrderDto dto = orderMapper.toDto(order);

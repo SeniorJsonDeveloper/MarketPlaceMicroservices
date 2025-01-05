@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@RedisHash("notifications")
+@RedisHash("notificationZ")
 public class Notification {
 
     private String id;
@@ -30,17 +30,20 @@ public class Notification {
 
     private String message;
 
-    public enum Status {
-        Доставлен,Создан,В_пути,Готов_к_выдаче
-    }
 
     @JsonFormat(pattern = "yyyy:Mm:dd")
     private LocalDateTime createdAt;
 
-
     private String orderId;
 
     private MessageDto messageDto;
+
+    private String status;
+
+
+    private Integer pageNumber;
+
+    private Integer pageSize;
 
 
 }

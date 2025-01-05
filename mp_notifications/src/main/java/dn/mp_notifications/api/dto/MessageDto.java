@@ -29,8 +29,6 @@ public class MessageDto implements Serializable {
 
     private BigDecimal price;
 
-    private Notification notification;
-
     @Override
     public String toString() {
         return "OrderDto{" +
@@ -42,7 +40,6 @@ public class MessageDto implements Serializable {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", rating=" + rating +
                 ", price=" + price +
-                ", notification=" + notification +
                 '}';
     }
 }

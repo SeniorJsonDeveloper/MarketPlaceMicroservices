@@ -41,6 +41,14 @@ public class OrderEntity implements Serializable {
         return "OrderEntity{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", status='" + status + '\'' +
+                ", message='" + message + '\'' +
+                ", price=" + price +
+                ", userId='" + userId + '\'' +
+                ", itemId='" + itemId + '\'' +
+                ", warehouseId='" + warehouseId + '\'' +
+                ", userNumber='" + userNumber + '\'' +
                 '}';
     }
 }

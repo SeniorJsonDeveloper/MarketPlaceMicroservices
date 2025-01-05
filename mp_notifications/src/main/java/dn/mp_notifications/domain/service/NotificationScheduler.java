@@ -15,10 +15,9 @@ public class NotificationScheduler {
     private final SenderService senderService;
 
 
-    @Scheduled(fixedRate = 1000)
-    public void clean(){
-        List<Notification> notifications =(List<Notification>) senderService.findAllNotifications();
 
-        senderService.deleteNotification(notifications);
+    public void clean(){
+//        List<Notification> notifications =(List<Notification>) senderService.findAllNotifications();
+//        senderService.deleteNotification(notifications);
     }
 }
