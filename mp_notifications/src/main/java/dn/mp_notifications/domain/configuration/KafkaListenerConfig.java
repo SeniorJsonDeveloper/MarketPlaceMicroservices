@@ -43,16 +43,21 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("id")
                     .getAsString();
+
             MessageDto dto = new MessageDto();
             dto.setId(id);
             dto.setMessage(message);
             dto.setName(name);
             dto.setStatus(status);
             senderService.sendNotification(dto,dto.getId());
+
             log.info("Received message: {}, " +
                      "Received name: {}, " +
-                    "Received status: {} "+
-                    "ReceivedId:{} ", dto.getMessage(), dto.getName(), dto.getStatus(),dto.getId());
+                     "Received status: {} "+
+                     "ReceivedId:{} ", dto.getMessage(),
+                    dto.getName(),
+                    dto.getStatus(),
+                    dto.getId());
 
         }catch (Exception e){
             log.error("Error parsing json payload", e);

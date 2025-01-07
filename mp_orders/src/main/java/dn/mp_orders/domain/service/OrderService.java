@@ -1,9 +1,8 @@
 package dn.mp_orders.domain.service;
-
 import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.domain.OrderEntity;
 
-import java.io.InputStream;
+import java.util.List;
 
 public interface OrderService {
 
@@ -13,10 +12,12 @@ public interface OrderService {
 
     void delete(String id);
 
-    void deleteAllOrders();
+    void deleteAllOrders(List<OrderEntity> orders);
 
     void updateOrderStatus(String id, OrderDto order);
 
-    Iterable<OrderDto> getAllOrders();
+    List<OrderDto> getAllOrders();
+
+    Double getTotalRating(List<OrderEntity> orders);
 
 }

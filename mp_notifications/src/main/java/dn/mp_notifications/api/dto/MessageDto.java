@@ -1,6 +1,6 @@
 package dn.mp_notifications.api.dto;
 
-import dn.mp_notifications.domain.entity.Notification;
+
 import lombok.*;
 
 import java.io.Serializable;

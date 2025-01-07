@@ -1,15 +1,11 @@
 package dn.mp_notifications.api.controller;
-
-import dn.mp_notifications.api.dto.PageResponseDTO;
-import dn.mp_notifications.api.dto.mapper.NotificationMapper;
-import dn.mp_notifications.domain.entity.Notification;
-
+import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.api.dto.NotificationDto;
+import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,8 +19,9 @@ public class NotificationController {
 
     @GetMapping("/page/")
     @ResponseStatus(HttpStatus.OK)
-    public Page<NotificationDto> getNotifications(@RequestParam int pageNumber,
-                                                  @RequestParam int pageSize ) {
+
+    public Page<NotificationDto> getNotifications(@RequestParam(required = false) int pageNumber,
+                                                  @RequestParam(required = false) int pageSize ) {
         return service.getPagedData(pageNumber, pageSize);
     }
 
@@ -36,8 +33,14 @@ public class NotificationController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<NotificationDto> getNotificationList(){
-        return service.getNotificationList();
+    public List<Notification> getNotificationList() {
+        return service.findAllNotifications();
+    }
+
+    @PostMapping("/send/")
+    public NotificationDto sendNotification(@RequestBody MessageDto messageDto,
+                                            @RequestParam String orderId) {
+        return service.sendNotification(messageDto, orderId);
     }
 
 

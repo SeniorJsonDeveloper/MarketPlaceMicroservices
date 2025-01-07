@@ -32,14 +32,12 @@ public class Notification {
 
     private String message;
 
-
     @JsonFormat(pattern = "yyyy:Mm:dd")
     private LocalDateTime createdAt;
 
     private String orderId;
 
     private String status;
-
 
     private Integer pageNumber;
 

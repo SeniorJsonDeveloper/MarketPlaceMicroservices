@@ -15,7 +15,4 @@ public interface Mappable <E,D>{
 
     List<E> fromDto(List<D> dto);
 
-    Iterable<E> toIterableEntiry(Iterable<D> dto);
-
-    Iterable<D> toIterable(Iterable<E> dto);
 }

@@ -3,6 +3,8 @@ server:
 spring:
   config:
     import: optional:file:.env[.properties]
+  main:
+    allow-circular-references: true
   mail:
     port: 587
     host: smtp.gmail.com
@@ -24,11 +26,24 @@ spring:
     topic:
       name: OrderToNotifications
 
-
 cache:
   redis:
     host: localhost
     port: 6379
+
+
+resilience4j.ratelimiter:
+  instances:
+    backendA:
+      limitForPeriod: 10
+      limitRefreshPeriod: 1s
+      timeoutDuration: 0
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
+    backendB:
+      limitForPeriod: 6
+      limitRefreshPeriod: 500ms
+      timeoutDuration: 3s
 
 
 

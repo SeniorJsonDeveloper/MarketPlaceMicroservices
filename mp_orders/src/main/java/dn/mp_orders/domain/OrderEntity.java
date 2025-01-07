@@ -1,12 +1,13 @@
 package dn.mp_orders.domain;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 
 @RedisHash("orders")
 @Getter
@@ -20,9 +21,12 @@ public class OrderEntity implements Serializable {
 
     private String name;
 
+    @CreatedDate
     private String createdAt;
 
     private String status;
+
+    private Double rating;
 
     private String message;
 

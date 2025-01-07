@@ -22,9 +22,22 @@ cache:
     port: 6379
 
 
+
 web:
   integration:
     paymentsUrl: http://localhost:8083/api/payment
     warehouseUrl: http://localhost:8081/api/warehouse
     pricesUrl: http://localhost:8082/api/prices
+resilience4j.ratelimiter:
+  instances:
+    backendA:
+      limitForPeriod: 10
+      limitRefreshPeriod: 1s
+      timeoutDuration: 0
+      registerHealthIndicator: true
+      eventConsumerBufferSize: 100
+    backendB:
+      limitForPeriod: 6
+      limitRefreshPeriod: 500ms
+      timeoutDuration: 3s
 
