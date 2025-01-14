@@ -1,6 +1,6 @@
 package dn.mp_orders.domain.configuration.redis;
 
-import dn.mp_orders.domain.OrderEntity;
+import dn.mp_orders.domain.entity.OrderEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;

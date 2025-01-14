@@ -3,7 +3,7 @@ package dn.mp_orders.api.dto;
 import lombok.Data;
 
 @Data
-public class KafkaDto {
+public class KafkaRecord {
 
     private String id;
 

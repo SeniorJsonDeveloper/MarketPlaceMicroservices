@@ -1,4 +1,4 @@
-package dn.mp_orders.domain;
+package dn.mp_orders.domain.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -7,6 +7,8 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 
 @RedisHash("orders")
@@ -22,7 +24,7 @@ public class OrderEntity implements Serializable {
     private String name;
 
     @CreatedDate
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     private String status;
 
@@ -39,6 +41,9 @@ public class OrderEntity implements Serializable {
     private String warehouseId;
 
     private String userNumber;
+
+
+    private Set<String> commentIds;
 
     @Override
     public String toString() {

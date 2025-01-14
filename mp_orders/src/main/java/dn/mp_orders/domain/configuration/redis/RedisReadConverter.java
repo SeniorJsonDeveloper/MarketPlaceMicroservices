@@ -1,6 +1,6 @@
 package dn.mp_orders.domain.configuration.redis;
 
-import dn.mp_orders.domain.OrderEntity;
+import dn.mp_orders.domain.entity.OrderEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;

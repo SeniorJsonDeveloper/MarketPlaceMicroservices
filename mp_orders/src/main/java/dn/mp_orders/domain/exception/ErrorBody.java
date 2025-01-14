@@ -16,7 +16,7 @@ public class ErrorBody {
 
     private String message;
 
-    private String description;
+    private String details;
 
-    private HttpStatus httpStatus;
+    private String path;
 }

@@ -1,14 +1,18 @@
 package dn.mp_orders.domain.service;
+import dn.mp_orders.api.dto.CommentDto;
+import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
-import dn.mp_orders.domain.OrderEntity;
+import dn.mp_orders.domain.entity.CommentEntity;
+import dn.mp_orders.domain.entity.OrderEntity;
 
 import java.util.List;
+import java.util.Set;
 
 public interface OrderService {
 
     OrderDto save(OrderDto order);
 
-    OrderDto findById(String id);
+    OrderEntity findById(String id);
 
     void delete(String id);
 
@@ -16,8 +20,14 @@ public interface OrderService {
 
     void updateOrderStatus(String id, OrderDto order);
 
-    List<OrderDto> getAllOrders();
+    List<OrderEntity> getAllOrders();
 
     Double getTotalRating(List<OrderEntity> orders);
+
+    OrderDto getCommentsForOrder(String orderId, Set<CommentDto> commentEntitySet);
+
+
+
+
 
 }

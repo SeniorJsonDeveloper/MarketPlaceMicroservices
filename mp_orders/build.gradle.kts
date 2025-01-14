@@ -37,23 +37,17 @@ dependencies {
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
     annotationProcessor ("org.projectlombok:lombok-mapstruct-binding:0.2.0")
     annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
-    // https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa
-
-
-    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct
-//    implementation("org.mapstruct:mapstruct:1.6.2")
-    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
-//    implementation("org.mapstruct:mapstruct-processor:1.6.2")
-    // https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding
-//    implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
+    implementation ("ch.qos.logback:logback-classic")
+    implementation ("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.google.code.gson:gson:2.11.0")
-
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch
+    implementation("org.springframework.data:spring-data-elasticsearch:5.4.0")
+
 }
 
 dependencyManagement {

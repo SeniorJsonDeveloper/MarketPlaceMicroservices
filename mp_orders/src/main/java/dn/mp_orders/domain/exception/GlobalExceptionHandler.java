@@ -11,14 +11,13 @@ import java.lang.reflect.InaccessibleObjectException;
 @RestControllerAdvice
 public class GlobalExceptionHandler  {
 
-
     @ExceptionHandler(OrderNotFound.class)
     public ResponseEntity<ErrorBody> handleNotFound(HttpStatus httpStatus, WebRequest request, OrderNotFound ex) {
         return ResponseEntity.ok(ErrorBody.builder()
                         .code(httpStatus.value())
                         .message(ex.getMessage())
-                        .description(request.getDescription(false))
-                        .httpStatus(HttpStatus.NOT_FOUND)
+                        .details(request.getDescription(false))
+                        .path(request.getContextPath())
                         .build());
     }
 
@@ -28,8 +27,8 @@ public class GlobalExceptionHandler  {
                 ErrorBody.builder()
                         .code(httpStatus.value())
                         .message(ex.getMessage())
-                        .description(request.getDescription(false))
-                        .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .details(request.getDescription(false))
+                        .path(request.getContextPath())
                         .build());
     }
 
@@ -39,8 +38,8 @@ public class GlobalExceptionHandler  {
                 ErrorBody.builder()
                         .code(httpStatus.value())
                         .message(ex.getMessage())
-                        .description(request.getDescription(true))
-                        .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .details(request.getDescription(true))
+                        .path(request.getContextPath())
                         .build());
     }
 
