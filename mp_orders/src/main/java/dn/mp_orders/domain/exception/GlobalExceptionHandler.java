@@ -32,6 +32,17 @@ public class GlobalExceptionHandler  {
                         .build());
     }
 
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ErrorBody> handleNotFound(HttpStatus httpStatus, WebRequest request, CommentNotFoundException ex) {
+        return ResponseEntity.ok(
+                ErrorBody.builder()
+                        .code(httpStatus.value())
+                        .message(ex.getMessage())
+                        .details(request.getDescription(true))
+                        .path(request.getContextPath())
+                        .build());
+    }
+
     @ExceptionHandler(InaccessibleObjectException.class)
     public ResponseEntity<ErrorBody> handleException(HttpStatus httpStatus, WebRequest request, InaccessibleObjectException ex) {
         return ResponseEntity.ok(

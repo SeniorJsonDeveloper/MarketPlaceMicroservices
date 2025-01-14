@@ -11,13 +11,12 @@ public interface CommentService {
 
     OrderDto addCommentForOrder(String orderId, CommentDto comment);
 
-    OrderDto getCommentsForOrder(String orderId,Set<CommentEntity> commentEntitySet);
 
     void editComment(String orderId, CommentDto comment);
 
     CommentEntity findCommentById(String id);
 
-    List<CommentEntity> getCommentsByOrderId(String orderId);
 
-     Double getRatingByComments(List<CommentEntity> comments);
+
+    Double getRatingByComments(List<CommentEntity> comments);
 }

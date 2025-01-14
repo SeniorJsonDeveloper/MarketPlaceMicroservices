@@ -13,6 +13,7 @@ import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +30,11 @@ public class CommentServiceImpl implements CommentService {
 
     private final OrderRepository orderRepository;
 
-    private final OrderMapper orderMapper;
-
-
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @Cacheable(cacheNames = "comment",key = "#comment.id")
     public OrderDto addCommentForOrder(String orderId, CommentDto comment) {
         var order = orderRepository.findById(orderId)
                 .orElseThrow(()->new OrderNotFound(
@@ -70,30 +69,7 @@ public class CommentServiceImpl implements CommentService {
 
 
 
-    @Override
-    public OrderDto getCommentsForOrder(String orderId,
-                                        Set<CommentEntity> commentEntitySet) {
 
-        if (orderId == null || orderId.isEmpty()) {
-            throw new IllegalArgumentException("Order ID cannot be null or empty");
-        }
-
-        OrderDto orderDto = orderRepository.findById(orderId)
-                .map(orderMapper::toDto)
-                .orElseThrow(()->new OrderNotFound("Order not found"));
-
-        List<CommentEntity> commentsForOrder = getCommentsByOrderId(orderId);
-
-        if (commentEntitySet != null && !commentEntitySet.isEmpty()) {
-            commentsForOrder.addAll(commentEntitySet);
-        }
-
-        orderDto.setComments(commentsForOrder);
-        log.info("Order comments: {}",commentsForOrder);
-        return orderDto;
-
-
-    }
 
     @Override
     public void editComment(String orderId, CommentDto comment) {
@@ -116,13 +92,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentEntity findCommentById(String id) {
         return commentRepository.findById(id).
-                orElseThrow(RuntimeException::new); //TODO: дописать исключение
+                orElseThrow(()-> new CommentNotFoundException
+                        (MessageFormat.format("Comment not found with id: {0}",id)));
     }
 
-    @Override
-    public List<CommentEntity> getCommentsByOrderId(String orderId) {
-        return commentRepository.findAllByOrderId(orderId);
-    }
 
     @Override
     public Double getRatingByComments(List<CommentEntity> comments) {
@@ -130,7 +103,7 @@ public class CommentServiceImpl implements CommentService {
                 .stream()
                 .mapToDouble(CommentEntity::getRating)
                 .average()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new CommentNotFoundException("Comment rating cannot be null or empty"));
     }
 
 
