@@ -107,7 +107,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-    private OrderDto mapToDto(OrderEntity order) {
+    public OrderDto mapToDto(OrderEntity order) {
         OrderDto orderDto = new OrderDto();
         orderDto.setId(order.getId());
         orderDto.setName(order.getName());
