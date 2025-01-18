@@ -30,6 +30,7 @@ public class CommentServiceImpl implements CommentService {
 
     private final OrderRepository orderRepository;
 
+    private final OrderMapper orderMapper;
 
 
     @Override
@@ -64,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
         orderRepository.save(order);
         log.info("CommentFor Order, Comment Text: {} , {}",commentEntity.getOrderId(),commentEntity.getText());
         log.info("Order comment ids: {} ",order.getCommentIds());
-        return mapToDto(order);
+        return orderMapper.mapToDto(order);
     }
 
 
@@ -107,16 +108,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-    public OrderDto mapToDto(OrderEntity order) {
-        OrderDto orderDto = new OrderDto();
-        orderDto.setId(order.getId());
-        orderDto.setName(order.getName());
-        orderDto.setMessage(order.getMessage());
-        orderDto.setStatus(order.getStatus());
-        orderDto.setPrice(order.getPrice());
-        orderDto.setWarehouseId(order.getWarehouseId());
-        var comments = commentRepository.findAllById(order.getCommentIds());
-        orderDto.setComments((List<CommentEntity>) comments);
-        return orderDto;
-    }
+    
+
 }
