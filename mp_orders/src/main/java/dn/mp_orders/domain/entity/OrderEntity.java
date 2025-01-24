@@ -4,7 +4,6 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -41,7 +40,6 @@ public class OrderEntity implements Serializable {
     private String warehouseId;
 
     private String userNumber;
-
 
     private Set<String> commentIds;
 

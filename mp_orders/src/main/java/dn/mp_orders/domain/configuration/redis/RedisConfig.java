@@ -49,7 +49,9 @@ public class RedisConfig {
                 .withCacheConfiguration("orderById",
                         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
                 .withCacheConfiguration("orders",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10))
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration("comment",
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(14))
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                                         .fromSerializer(new GenericJackson2JsonRedisSerializer())));
     }

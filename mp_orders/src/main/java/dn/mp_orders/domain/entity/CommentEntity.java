@@ -2,6 +2,10 @@ package dn.mp_orders.domain.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +32,12 @@ public class CommentEntity implements Serializable {
     @JsonIgnore
     private String userId;
 
+    @Size(min = 1,max = 255,message = "Text cant be empty")
+    @Positive(message = "Text cant be negative")
     private String text;
+
+    @Min(value = 1,message = "Rating cant be <1")
+    @Max(value = 5,message = "Rating cant be >5")
 
     private int rating;
 }

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+import org.springframework.amqp.core.Queue;
 
 @Slf4j
 @Service
@@ -57,11 +57,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     @Override
-
-    @Cacheable(value = "orders")
     public List<OrderEntity> getAllOrders() {
-        return (List<OrderEntity>) orderRepository
-                .findAll();
+        return orderRepository.findAll();
 
 
     }
@@ -133,7 +130,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @CacheEvict(value = "orderAfterCreate", allEntries = true,key = "#orderDto.id")
     @Transactional
     public OrderDto save(OrderDto orderDto) {
         OrderEntity order = new OrderEntity();

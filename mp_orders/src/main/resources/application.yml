@@ -3,6 +3,16 @@ server:
 spring:
   config:
     import: optional:file:.env[.properties]
+  elasticsearch:
+    uris: http://localhost:9200
+  rabbitmq:
+    username: guest
+    password: guest
+    host: localhost
+    port: 5672
+
+
+
 
   kafka:
     consumer:
@@ -40,4 +50,10 @@ resilience4j.ratelimiter:
       limitForPeriod: 6
       limitRefreshPeriod: 500ms
       timeoutDuration: 3s
+rabbit:
+  queue:
+    name: message_queue
+  delay_queue:
+    name: delay_queue
+
 

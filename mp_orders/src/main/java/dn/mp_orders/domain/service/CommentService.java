@@ -11,12 +11,9 @@ public interface CommentService {
 
     OrderDto addCommentForOrder(String orderId, CommentDto comment);
 
-
     void editComment(String orderId, CommentDto comment);
 
     CommentEntity findCommentById(String id);
-
-
 
     Double getRatingByComments(List<CommentEntity> comments);
 }

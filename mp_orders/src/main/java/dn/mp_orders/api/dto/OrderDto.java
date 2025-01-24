@@ -27,6 +27,8 @@ public class OrderDto implements Serializable {
 
     private BigDecimal price;
 
+    private Double rating;
+
     private String userId;
 
     private String warehouseId;

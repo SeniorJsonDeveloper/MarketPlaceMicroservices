@@ -9,11 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 @Mapper(componentModel = "spring",unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface CommentMapper {
+public interface CommentMapper extends Mappable<CommentEntity,CommentDto> {
 
-    Set<CommentDto> mapToDto(Set<CommentEntity> entity);
-
-    List<CommentEntity> mapToEntityList(List<CommentEntity> comments);
-
-    List<CommentDto> mapToDtoList(List<CommentEntity> comments);
 }
