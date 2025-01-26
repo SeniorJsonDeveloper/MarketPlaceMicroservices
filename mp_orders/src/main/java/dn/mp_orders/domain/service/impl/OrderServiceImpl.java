@@ -12,6 +12,7 @@ import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.exception.OrderNotFound;
 import dn.mp_orders.domain.repository.CommentRepository;
 import dn.mp_orders.domain.repository.OrderRepository;
+import dn.mp_orders.domain.service.CommentService;
 import dn.mp_orders.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -21,6 +22,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
@@ -42,11 +44,12 @@ public class OrderServiceImpl implements OrderService {
 
     private static final String CREATED = "ЗАКАЗ СОЗДАН!";
 
-
     @Value("${spring.kafka.topic.name}")
     private String topicName;
 
     private final OrderRepository orderRepository;
+
+    private final CommentService commentService;
 
     private final CommentRepository commentRepository;
 
@@ -72,23 +75,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(0.0);
     }
 
-    @Override
-    @Cacheable("ordersWithComments")
-    public OrderDto getCommentsForOrder(String orderId, Set<CommentDto> commentEntitySet){
-//        if (commentEntitySet == null || commentEntitySet.isEmpty()){
-//            throw new CommentNotFoundException("Comments not found for order");
-//        }
-//        OrderService proxy = applicationContext.getBean(OrderService.class);
-//        OrderDto orderDto = proxy.findById(orderId);
-//        Set<CommentDto> comments = Optional
-//                .ofNullable(orderDto.getComments())
-//                .orElse(new HashSet<>());
-//        comments.addAll(commentEntitySet);
-//        orderDto.setComments(comments);
 
-        return null; //TODO:
-
-    }
 
 
     @Override
@@ -171,8 +158,35 @@ public class OrderServiceImpl implements OrderService {
                 }, ()-> {
                     throw new OrderNotFound("Order not found");
                 });
+    }
 
+    @Scheduled(cron = "0 0 * * * *")
+    public void getAvgRatingByComments(){
+        try {
+            List<CommentEntity> comments = (List<CommentEntity>) commentRepository.findAll();
+            if (comments.isEmpty()) {
+                log.warn("No comments found. Skipping average rating calculation.");
+                return;
+            }
+            Double rating = commentService.getRatingByComments(comments);
+            log.info("Average Rating: {}", rating);
+        } catch (Exception e) {
+            log.error("Failed to calculate average rating: {}", e.getMessage(), e);
+        }
+    }
 
+    @Scheduled(cron = "0 0 0 * * *")
+    public void cleanAllOrders(){
+        try {
+            List<OrderEntity> orders = getAllOrders();
+            if (orders.isEmpty()) {
+                log.warn("No orders found. Skipping cache cleaning.");
+            }
+            orderRepository.deleteAll(orders);
+            log.info("Cache cleaned: {}", orders.stream().map(OrderEntity::getId).toList());
+        }catch (Exception e){
+            log.error("Failed to clean cache: {}", e.getMessage(), e);
+        }
     }
 
 

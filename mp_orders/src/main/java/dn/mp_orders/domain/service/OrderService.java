@@ -24,7 +24,10 @@ public interface OrderService {
 
     Double getTotalRating(List<OrderEntity> orders);
 
-    OrderDto getCommentsForOrder(String orderId, Set<CommentDto> commentEntitySet);
+    void getAvgRatingByComments();
+
+    void cleanAllOrders();
+
 
 
 
