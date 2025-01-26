@@ -8,7 +8,6 @@ import java.util.Set;
 @Repository
 public interface CommentRepository  extends CrudRepository<CommentEntity,String> {
 
-    Set<CommentEntity> findAllById(String orderId);
 
     List<CommentEntity> findAllByOrderId(String orderId);
 }
