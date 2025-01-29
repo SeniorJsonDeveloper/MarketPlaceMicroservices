@@ -1,17 +1,16 @@
 package dn.mp_orders.domain.configuration.redis;
 
-import dn.mp_orders.domain.OrderEntity;
+import dn.mp_orders.domain.entity.OrderEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 
 import java.time.Duration;
 
@@ -24,17 +23,34 @@ public class RedisConfig {
     @Value("${cache.redis.port}")
     private int port;
 
+    @Value("${cache.cacheNames.orders}")
+    private String orders;
+
+    @Value("${cache.cacheNames.orderById}")
+    private String orderById;
+
+    @Value("${cache.cacheNames.orderAfterCreate}")
+    private String orderAfterCreate;
+
+    @Value("${cache.cacheNames.comment}")
+    private String comment;
+
+    @Value("${cache.cacheNames.ordersWithPagination}")
+    private String ordersWithPagination;
+
+
+
+
+
     @Bean
     public JedisConnectionFactory jedisConnectionFactory() {
-        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
-        jedisConnectionFactory.setHostName(host);
-        jedisConnectionFactory.setPort(port);
-        return jedisConnectionFactory;
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
+        return new  JedisConnectionFactory(redisStandaloneConfiguration);
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate() {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+    public <F,S> RedisTemplate<F, S> redisTemplate() {
+        RedisTemplate<F, S> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
@@ -47,10 +63,18 @@ public class RedisConfig {
     @Bean
     public RedisCacheManagerBuilderCustomizer cacheManagerBuilderCustomizer() {
         return (builder) -> builder
-                .withCacheConfiguration("orderAfterCreate",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(5)))
-                .withCacheConfiguration("orderById",
-                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(10)));
+                .withCacheConfiguration(orderAfterCreate, RedisCacheConfiguration.defaultCacheConfig()
+                        .entryTtl(Duration.ofMinutes(5)))
+                .withCacheConfiguration(orderById,  RedisCacheConfiguration.defaultCacheConfig()
+                        .entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration(orders, RedisCacheConfiguration.defaultCacheConfig()
+                        .entryTtl(Duration.ofMinutes(10)))
+                .withCacheConfiguration(comment,
+                        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(14)))
+                .withCacheConfiguration(ordersWithPagination, RedisCacheConfiguration.defaultCacheConfig()
+                        .entryTtl(Duration.ofMinutes(20))
+                                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                                        .fromSerializer(new GenericJackson2JsonRedisSerializer())));
     }
 
     @Bean
@@ -63,9 +87,16 @@ public class RedisConfig {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair
+                .serializeValuesWith(RedisSerializationContext.SerializationPair
                                 .fromSerializer(new Jackson2JsonRedisSerializer<>(OrderEntity.class)));
+    }
+
+    @Bean
+    public RedisCacheManager redisCacheManager(){
+        RedisCacheConfiguration redisCacheConfiguration = redisCacheConfiguration();
+        return RedisCacheManager.builder(jedisConnectionFactory())
+                .cacheDefaults(redisCacheConfiguration)
+                .build();
     }
 
 }

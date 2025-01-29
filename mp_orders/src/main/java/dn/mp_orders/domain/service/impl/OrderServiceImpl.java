@@ -1,115 +1,331 @@
 package dn.mp_orders.domain.service.impl;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import dn.mp_orders.api.dto.KafkaDto;
+import dn.mp_orders.api.client.WarehouseClient;
+import dn.mp_orders.api.dto.KafkaRecord;
 import dn.mp_orders.api.dto.OrderDto;
-import dn.mp_orders.api.dto.Status;
-import dn.mp_orders.domain.OrderEntity;
-import dn.mp_orders.domain.configuration.LocalDateDeserializer;
+import dn.mp_orders.api.client.WarehouseResponse;
+import dn.mp_orders.domain.entity.CommentEntity;
+import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.exception.OrderNotFound;
+import dn.mp_orders.domain.repository.CommentRepository;
 import dn.mp_orders.domain.repository.OrderRepository;
+import dn.mp_orders.domain.service.CommentService;
 import dn.mp_orders.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.context.ApplicationContext;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@CacheConfig(cacheManager = "redisCacheManager")
 public class OrderServiceImpl implements OrderService {
+
+    private static final String DELIVERED = "ДОСТАВЛЕН";
+
+    private static final String ON_THE_WAY = "В ПУТИ";
+
+    private static final String PROCESSING = "В ОБРАБОТКЕ";
+
+    private static final String CANCELED = "ОТМЕНЕН";
+
+    private static final String CREATED = "ЗАКАЗ СОЗДАН!";
+
+    @Value("${spring.kafka.topic.name}")
+    private String OTNTopicName;
+
+    @Value("${spring.kafka.topic.second_name}")
+    private String OTWTopicName;
 
     private final OrderRepository orderRepository;
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final CommentService commentService;
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final CommentRepository commentRepository;
 
-    private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     private final Gson gson;
 
+    private final ApplicationContext applicationContext;
 
-    @SneakyThrows
-    public void sendMessage(OrderDto orderDto) {
-        Map<String, Object> message = new HashMap<>();
-        var id = orderDto.getId();
-        KafkaDto kafkaDto = new KafkaDto();
-        kafkaDto.setMessage("Ваш заказ создан");
-        kafkaDto.setStatus(Status.СОЗДАН.toString());
-        kafkaDto.setCreatedAt(true);
-        message.put(id, kafkaDto);
-        String kafkaMessage = gson.toJson(message);
-        kafkaTemplate.send("OrdersToNotifications",id, kafkaMessage);
+    private final WarehouseClient warehouseClient;
 
+    @Override
+    @Cacheable(cacheNames = "ordersWithPagination")
+    public Page<OrderEntity> getAllOrders(Pageable pageable) {
+        try {
+            if (pageable == null) {
+                pageable = PageRequest.of(0, 10);
+            }
+            return orderRepository.findAll(pageable);
+
+        } catch (DataAccessException e) {
+            log.error("Не удалось получить список заказов", e);
+            return Page.empty();
+        }
+    }
+
+    @Override
+    @Cacheable(cacheNames = "orderList")
+    public List<OrderEntity> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public Double getTotalRating(List<OrderEntity> orders) {
+        if (orders == null || orders.isEmpty()) {
+            return 0.0;
+        }
+        return orders.parallelStream()
+                .filter(o -> o.getRating() != null)
+                .mapToDouble(OrderEntity::getRating)
+                .average()
+                .orElse(0.0);
     }
 
 
+    @Override
+    public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException {
+        Objects.requireNonNull(id, "id must not be null");
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
 
+        try {
+            CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
+                    () -> getWarehouseId(warehouseName), executorService);
 
+            CompletableFuture<OrderEntity> orderTask = CompletableFuture.supplyAsync(
+                    () -> findOrderById(id), executorService);
+
+            CompletableFuture<Void> allTasks = CompletableFuture.allOf(warehouseTask, orderTask);
+            allTasks.join();
+
+            var warehouseResponse = warehouseTask.get();
+            if (!warehouseResponse.getIsExists()) {
+                throw new OrderNotFound("Order not found");
+            }
+            var order = orderTask.get();
+            order.setWarehouseId(warehouseResponse.getId());
+            log.info("Warehouse id is: {}", warehouseResponse.getId());
+            log.info("Warehouse boolean is: {}", warehouseResponse.getIsExists());
+            return mapToDto(order);
+
+        } finally {
+            executorService.shutdown();
+            if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                executorService.shutdownNow();
+            }
+        }
+
+    }
 
     @Override
-    @Cacheable(cacheNames = "orderAfterCreate",key = "#orderDto.id",condition = "#orderDto.id!=null")
+    public OrderEntity findOrderById(String id) {
+        return orderRepository.findById(id)
+                .orElseThrow(()-> new OrderNotFound("Order not found"));
+    }
+
     @SneakyThrows
-    public OrderDto save(OrderDto orderDto) {
-        OrderEntity order = new OrderEntity();
-        order.setId(UUID.randomUUID().toString());
-        order.setName(orderDto.getName());
-        order.setStatus(true);
+    public void sendMessage(final OrderDto orderDto) {
+        JsonObject jsonObject = getJsonObject(orderDto);
+        String result = gson.toJson(jsonObject);
+        log.info("Kafka message: {}", result);
+
+        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(OTNTopicName, result);
+        future.whenComplete((r, e) -> {
+            if (e == null) {
+                log.info("Kafka sent successfully. Offset: {}, Message: {}", r.getRecordMetadata().offset(), result);
+            } else {
+                log.error("Failed to send to Kafka. Reason: {}", e.getMessage(), e);
+            }
+        });
+    }
+
+    @Async
+    public void sendAsyncMessage(final OrderDto orderDto) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                sendMessage(orderDto);
+            } catch (Exception e) {
+                log.error("Failed send message to Kafka: {}", orderDto.getId());
+            }
+        });
+    }
+
+    private static JsonObject getJsonObject(OrderDto orderDto) {
+        KafkaRecord kafkaRecord = new KafkaRecord();
+        kafkaRecord.setMessage(orderDto.getMessage());
+        kafkaRecord.setName(orderDto.getName());
+        kafkaRecord.setStatus(orderDto.getStatus());
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", orderDto.getId());
+        jsonObject.addProperty("message", kafkaRecord.getMessage());
+        jsonObject.addProperty("name", kafkaRecord.getName());
+        jsonObject.addProperty("status", kafkaRecord.getStatus());
+        return jsonObject;
+    }
+
+    @Override
+    @CachePut(value = "orderAfterCreate", key = "#result.id")
+    @CacheEvict(value = {"orders", "orderById"}, allEntries = true)
+    public OrderDto create(final OrderDto orderDto) {
+        OrderEntity order;
+        if (orderDto.getId() != null && orderRepository.existsById(orderDto.getId())) {
+            order = orderRepository.findById(orderDto.getId())
+                    .orElseThrow(() -> new OrderNotFound("Order not found"));
+        } else {
+            order = new OrderEntity();
+            order.setId(UUID.randomUUID().toString());
+            order.setName(orderDto.getName());
+            order.setMessage(orderDto.getMessage());
+            order.setStatus(CREATED);
+        }
+        log.info("Saving order: {}", order);
+
         orderRepository.save(order);
-        OrderDto dto = new OrderDto();
-        dto.setId(order.getId());
-        dto.setName(order.getName());
-        dto.setStatus(order.getStatus());
-        sendMessage(dto);
+
+        var dto = mapToDto(order);
+        log.info("Saved order: {}", dto);
+//        try {
+//            sendAsyncMessage(dto);
+//        } catch (Exception e) {
+//            log.error("Failed to send message to Kafka: {}", dto.getId());
+//        }
         return dto;
     }
 
-    @Override
-    @Cacheable(cacheNames = "orderById",key = "#id")
-    public OrderEntity findById(String id) {
-        return orderRepository.findById(id)
-                .orElseThrow(() -> new OrderNotFound("Order not found"));
-    }
+
+
+
 
     @Override
     public void delete(String id) {
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("Id cannot be null or blank");
+        }
+        if(!orderRepository.existsById(id)){
+            throw new OrderNotFound("Order not found");
+        }
         orderRepository.deleteById(id);
     }
 
     @Override
-    public void deleteAllOrders() {
-        orderRepository.deleteAll();
+    public void deleteAllOrders(List<OrderEntity> orders) {
+        if (orders == null || orders.isEmpty()) {
+            return;
+        }
+        List<OrderEntity> orderToDelete = orders.stream()
+                        .filter(order->order != null && order.getStatus().equals(DELIVERED))
+                        .collect(Collectors.toCollection(ArrayList::new));
+        if (orderToDelete.isEmpty()) {
+            log.info("Not delivered orders found for deletion. Skipping");
+        }
+        try {
+            log.info("Successfully deleted orders: {}",
+                    orderToDelete.stream().map(OrderEntity::getId).toList());
+            orderRepository.deleteAll(orderToDelete);
+        }catch (Exception e){
+            throw new RuntimeException("Order not found");
+        }
     }
 
     @Override
-    @CachePut(cacheNames = "orderAfterUpdate")
-    public OrderEntity update(String id, OrderDto order) {
-        OrderEntity requireOrder = findById(id);
-        if (!requireOrder.getId().equals(id)) {
+    @CacheEvict(value = {"orders", "orderById"}, key = "#id",beforeInvocation = false)
+    public void updateOrderStatus(final String id,
+                                  final OrderDto order) {
+
+        if (order.getStatus() == null || order.getStatus().isBlank()) {
+            throw new IllegalArgumentException("Status cannot be null or blank");
+        }
+        orderRepository.findById(id).ifPresentOrElse(o->{
+                    o.setStatus(order.getStatus());
+                    orderRepository.save(o);
+                    sendAsyncMessage(mapToDto(o));
+                    log.info("UPDATED STATUS: {}", order.getStatus());
+                }, ()-> {
+                    throw new OrderNotFound("Order not found");
+                });
+    }
+
+    @Scheduled(cron = "0 0 * * * *")
+    public void getAvgRatingByComments(){
+        try {
+            List<CommentEntity> comments = (List<CommentEntity>) commentRepository.findAll();
+            if (comments.isEmpty()) {
+                log.warn("No comments found. Skipping average rating calculation.");
+                return;
+            }
+            var rating = commentService.getRatingByComments(comments);
+            log.info("Average Rating: {}",rating);
+        } catch (Exception e) {
+            log.error("Failed to calculate average rating: {}", e.getMessage(), e);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void cleanAllOrders(){
+        try {
+            OrderService proxy = applicationContext.getBean(OrderService.class);
+            List<OrderEntity> orders = proxy.getAllOrders();
+            if (!orders.isEmpty()) {
+                log.warn("No orders found. Skipping cache cleaning.");
+            }
+            orderRepository.deleteAll(orders);
+            log.info("Cache cleaned: {}", orders.stream().map(OrderEntity::getId).toList());
+        }catch (Exception e){
+            log.error("Failed to clean cache: {}", e.getMessage(), e);
+        }
+    }
+
+
+
+
+    public WarehouseResponse getWarehouseId(String developerName) {
+        return warehouseClient.getWarehouseId(developerName);
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleOrderSavedEvent(OrderSavedEvent event) {
+        sendMessage(event.getOrderDto());
+    }
+
+    private  static  OrderDto mapToDto(OrderEntity order) {
+        if (order == null) {
             throw new OrderNotFound("Order not found");
         }
-        requireOrder.setId(UUID.randomUUID().toString());
-        requireOrder.setName(order.getName());
-        requireOrder.setPrice(order.getPrice());
-        requireOrder.setCreatedAt(LocalDateTime.now());
-        return orderRepository.save(requireOrder);
-
+        OrderDto orderDto = new OrderDto();
+        orderDto.setId(order.getId());
+        orderDto.setName(order.getName());
+        orderDto.setMessage(order.getMessage());
+        orderDto.setStatus(order.getStatus());
+        orderDto.setPrice(order.getPrice());
+        orderDto.setWarehouseId(order.getWarehouseId());
+        return orderDto;
     }
+
+
 }
+

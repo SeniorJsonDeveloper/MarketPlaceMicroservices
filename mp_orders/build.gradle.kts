@@ -29,25 +29,39 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-batch")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.projectlombok:lombok")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("redis.clients:jedis:5.2.0")
-    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct
-//    implementation("org.mapstruct:mapstruct:1.6.2")
-    // https://mvnrepository.com/artifact/org.mapstruct/mapstruct-processor
-//    implementation("org.mapstruct:mapstruct-processor:1.6.2")
-    // https://mvnrepository.com/artifact/org.projectlombok/lombok-mapstruct-binding
-//    implementation("org.projectlombok:lombok-mapstruct-binding:0.2.0")
-    // https://mvnrepository.com/artifact/com.google.code.gson/gson
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("org.mapstruct:mapstruct:1.5.5.Final")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:3.4.0")
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-logging
+    implementation("org.springframework.boot:spring-boot-starter-logging:3.3.6")
+    // https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit
+    implementation("org.springframework.amqp:spring-rabbit:3.2.1")
+    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp
+    implementation("org.springframework.boot:spring-boot-starter-amqp:3.4.0")
+    // https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.25")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+
+
+
+    annotationProcessor ("org.projectlombok:lombok-mapstruct-binding:0.2.0")
+    annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
+    implementation ("ch.qos.logback:logback-classic")
+    implementation ("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("com.google.code.gson:gson:2.11.0")
+    runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.kafka:spring-kafka-test")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+
+
 }
 
 dependencyManagement {
