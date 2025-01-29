@@ -5,6 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
-public interface WareHouseRepository extends JpaRepository<WareHouseEntity, String>, JpaSpecificationExecutor<WareHouseEntity> {
+public interface WareHouseRepository extends JpaRepository<WareHouseEntity, String>,
+                                             JpaSpecificationExecutor<WareHouseEntity> {
+
+
+    Optional<WareHouseEntity> getByName(String name);
+
+    Optional<WareHouseEntity> findByDeveloperName(String developerName);
 }

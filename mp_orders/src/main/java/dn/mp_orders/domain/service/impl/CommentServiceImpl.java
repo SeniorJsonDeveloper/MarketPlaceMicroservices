@@ -10,6 +10,7 @@ import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Cacheable(cacheNames = "comment",key = "#comment.id")
+    @CacheEvict(value = "comments",key = "#result.id")
     public OrderDto addCommentForOrder(String orderId, CommentDto comment) {
         var order = orderRepository.findById(orderId)
                 .orElseThrow(()->new OrderNotFound(
@@ -125,7 +126,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
 
-    private OrderDto mapToDto(OrderEntity order) {
+    public OrderDto mapToDto(OrderEntity order) {
         OrderDto orderDto = new OrderDto();
         orderDto.setId(order.getId());
         orderDto.setName(order.getName());

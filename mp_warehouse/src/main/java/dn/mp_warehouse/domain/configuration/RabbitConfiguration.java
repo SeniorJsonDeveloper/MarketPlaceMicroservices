@@ -1,7 +1,10 @@
 package dn.mp_warehouse.domain.configuration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +22,26 @@ public class RabbitConfiguration {
     @Value("${rabbit.queue.name}")
     private String queueName;
 
+    @Value("${rabbit.topic.name}")
+    private String topicName;
+
+    @Value("${rabbit.routingKey.name}")
+    private String routingKey;
+
+
     @Bean
     public Queue queue() {
         return new Queue(queueName,false);
+    }
+
+    @Bean
+    public TopicExchange topicExchange(){
+        return new TopicExchange(topicName);
+    }
+
+    @Bean
+    public Binding binding(Queue queue, TopicExchange topicExchange){
+        return BindingBuilder.bind(queue).to(topicExchange).with(routingKey);
     }
 
     @Bean

@@ -19,4 +19,6 @@ public class ErrorBody {
     private String details;
 
     private String path;
+
+    private String description;
 }

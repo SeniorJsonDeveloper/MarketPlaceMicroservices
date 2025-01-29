@@ -71,6 +71,11 @@ services:
       POSTGRES_USER: danilanovikov
       POSTGRES_PASSWORD: demo2228
       POSTGRES_DB: mp
+  rabbitmq-2:
+    image: rabbitmq:4.0.5
+    restart: always
+    ports:
+      - "5672:5672"
 volumes:
   kafka_data:
   postgres_data:

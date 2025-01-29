@@ -8,7 +8,8 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication
+
+@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration.class})
 @EnableScheduling
 @EnableCaching
 @EnableKafka

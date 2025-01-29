@@ -10,6 +10,24 @@ spring:
     password: guest
     host: localhost
     port: 5672
+    listener:
+      direct:
+        acknowledge-mode: manual
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: danilanovikov
+    password: demo2228
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  devtools:
+    restart:
+      exclude: dn/mp_orders/api/dto/*
+
+
+
 
 
 
@@ -20,8 +38,14 @@ spring:
     bootstrap-servers: localhost:9092
     topic:
       name: OrderToNotifications
+      second_name: OrderToWarehouse
+    listener:
+      ack-mode: manual
   main:
     allow-bean-definition-overriding: true
+  threads:
+    virtual:
+      enabled: true
 
 
 
@@ -30,13 +54,20 @@ cache:
   redis:
     host: localhost
     port: 6379
+  cacheNames:
+    orderAfterCreate: orderAfterCreate
+    orderById: orderById
+    orders: orderById
+    comment: comment
+    ordersWithPagination: ordersWithPagination
+
 
 
 
 web:
   integration:
-    paymentsUrl: http://localhost:8083/api/payment
-    warehouseUrl: http://localhost:8081/api/warehouse
+    paymentsUrl: http://localhost:8083/api/v1/payment
+    warehouseUrl: http://localhost:8081/api/v1/warehouse
     pricesUrl: http://localhost:8082/api/prices
 resilience4j.ratelimiter:
   instances:
@@ -52,8 +83,7 @@ resilience4j.ratelimiter:
       timeoutDuration: 3s
 rabbit:
   queue:
-    name: message_queue
-  delay_queue:
-    name: delay_queue
+    name: WarehouseToOrders
+
 
 

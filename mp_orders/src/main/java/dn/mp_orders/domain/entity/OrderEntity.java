@@ -1,20 +1,20 @@
 package dn.mp_orders.domain.entity;
-
+import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
+import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
 
 
-@RedisHash("orders")
+//@RedisHash("orders")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "orders_table",schema = "orders")
 public class OrderEntity implements Serializable {
 
     @Id
@@ -22,9 +22,12 @@ public class OrderEntity implements Serializable {
 
     private String name;
 
-    @CreatedDate
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Transient
     private LocalDateTime createdAt;
 
+    @Column(nullable = false)
     private String status;
 
     private Double rating;
@@ -41,6 +44,10 @@ public class OrderEntity implements Serializable {
 
     private String userNumber;
 
+    private Boolean isActive;
+
+    @Transient
+    @Enumerated(EnumType.STRING)
     private Set<String> commentIds;
 
     @Override
@@ -58,4 +65,5 @@ public class OrderEntity implements Serializable {
                 ", userNumber='" + userNumber + '\'' +
                 '}';
     }
+
 }

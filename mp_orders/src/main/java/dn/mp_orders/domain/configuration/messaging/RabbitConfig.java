@@ -1,19 +1,19 @@
 package dn.mp_orders.domain.configuration.messaging;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class RabbitConfig {
 
     @Value("${rabbit.queue.name}")
     private String queueName;
-
-    @Value("${rabbit.delay_queue.name}")
-    private String delayQueueName;
 
 
     @Bean
@@ -21,9 +21,10 @@ public class RabbitConfig {
         return new Queue(queueName,false);
     }
 
-    @Bean
-    public Queue ordersDelayQueue() {
-        return new Queue(delayQueueName,false);
+
+    @RabbitListener(queues = "WarehouseToOrders")
+    public void receiveMessage(String message) {
+        log.info("Received message: {}", message);
     }
 
 

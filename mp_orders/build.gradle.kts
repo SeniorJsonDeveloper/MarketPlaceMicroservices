@@ -29,9 +29,12 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-batch")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     compileOnly("org.projectlombok:lombok")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.kafka:spring-kafka")
     implementation("redis.clients:jedis:5.2.0")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
@@ -42,6 +45,9 @@ dependencies {
     implementation("org.springframework.amqp:spring-rabbit:3.2.1")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp
     implementation("org.springframework.boot:spring-boot-starter-amqp:3.4.0")
+    // https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.25")
+
 
 
 
@@ -51,7 +57,7 @@ dependencies {
     implementation ("ch.qos.logback:logback-classic")
     implementation ("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.google.code.gson:gson:2.11.0")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
 
 

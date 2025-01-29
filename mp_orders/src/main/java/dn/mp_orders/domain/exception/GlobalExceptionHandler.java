@@ -1,5 +1,6 @@
 package dn.mp_orders.domain.exception;
 
+import jakarta.validation.UnexpectedTypeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,7 +22,7 @@ public class GlobalExceptionHandler  {
                         .build());
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(Exception .class)
     public ResponseEntity<ErrorBody> handleException(HttpStatus httpStatus, WebRequest request, Exception ex) {
         return ResponseEntity.ok(
                 ErrorBody.builder()
@@ -43,7 +44,7 @@ public class GlobalExceptionHandler  {
                         .build());
     }
 
-    @ExceptionHandler(InaccessibleObjectException.class)
+    @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorBody> handleException(HttpStatus httpStatus, WebRequest request, InaccessibleObjectException ex) {
         return ResponseEntity.ok(
                 ErrorBody.builder()
@@ -53,5 +54,19 @@ public class GlobalExceptionHandler  {
                         .path(request.getContextPath())
                         .build());
     }
+
+    @ExceptionHandler(UnexpectedTypeException.class)
+    public ResponseEntity<ErrorBody> handleException(HttpStatus httpStatus, WebRequest request, UnexpectedTypeException ex) {
+        return ResponseEntity.ok(
+                ErrorBody.builder()
+                        .code(httpStatus.value())
+                        .message(ex.getLocalizedMessage())
+                        .details(request.getDescription(true))
+                        .path(request.getContextPath())
+                        .build());
+    }
+
+
+
 
 }

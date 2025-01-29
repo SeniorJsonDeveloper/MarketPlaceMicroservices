@@ -30,6 +30,8 @@ public class ProductEntity {
 
     private String category;
 
+    private String brand;
+
     private String country;
 
     private Long count;
@@ -40,7 +42,7 @@ public class ProductEntity {
     @Column(unique = true)
     private String sellerId;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     private WareHouseEntity warehouse;
 
 

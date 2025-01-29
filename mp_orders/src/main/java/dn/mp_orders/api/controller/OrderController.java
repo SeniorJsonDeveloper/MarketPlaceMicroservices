@@ -1,29 +1,32 @@
 package dn.mp_orders.api.controller;
 
 import dn.mp_orders.api.dto.CommentDto;
-import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
 
-import dn.mp_orders.domain.entity.CommentEntity;
 import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.service.CommentService;
 import dn.mp_orders.domain.service.OrderService;
-import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.MDC;
 
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/v1/order")
 @RequiredArgsConstructor
+@Tag(name = "Order",description = "Действия с заказом")
 public class OrderController {
 
     private final OrderService orderService;
@@ -33,30 +36,38 @@ public class OrderController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    private OrderDto createOrder(@RequestBody OrderDto order) {
-        return orderService.save(order);
+    @ApiResponse(description = "Операция по созданию заказа",responseCode = "201")
+    private OrderDto createOrder(@Valid @RequestBody OrderDto order) {
+        return orderService.create(order);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public OrderEntity getOrder(@PathVariable String id) {
-        return orderService.findById(id);
+    @ApiResponse(description = "Операция по поиску заказа на складе",responseCode = "200")
+    public OrderDto getOrder(@PathVariable String id,
+                             @RequestParam(required = false) String developerName) throws ExecutionException, InterruptedException {
+        return orderService.findOrderOnWarehouse(id,developerName);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(description = "Операция по поиску удалению",responseCode = "204")
     public void deleteOrder(@PathVariable String id) {
         orderService.delete(id);
     }
 
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public List<OrderEntity> getOrders() {
-        return orderService.getAllOrders();
+    @ApiResponse(description = "Операция по получению списка заказов с пагинацией",responseCode = "200")
+    public List<OrderEntity> getOrders(@RequestParam int pageSize,
+                                       @RequestParam int pageNumber) {
+        return orderService.getAllOrders(PageRequest.of(pageSize,pageNumber)).getContent();
     }
 
     @PatchMapping("/edit/{id}")
-    @ResponseStatus(HttpStatus.RESET_CONTENT)
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ApiResponse(description = "Изменение заказа",responseCode = "200")
+
     public void editOrder(@PathVariable String id,
                           @RequestBody OrderDto order) {
         orderService.updateOrderStatus(id, order);
@@ -64,13 +75,15 @@ public class OrderController {
 
     @PostMapping("/comment/add")
     @ResponseStatus(HttpStatus.CREATED)
+    @ApiResponse(description = "Добавление комментария для заказа",responseCode = "200")
     public OrderDto setCommentForOrder(@RequestParam String orderId,
-                                       @RequestBody CommentDto commentDto){
+                                       @Validated @RequestBody CommentDto commentDto){
         return commentService.addCommentForOrder(orderId,commentDto);
     }
 
     @PatchMapping("/comment/edit")
     @ResponseStatus(HttpStatus.RESET_CONTENT)
+    @ApiResponse(description = "Редактирование комментария для заказа",responseCode = "201")
     public void editCommentForOrder(@RequestParam String orderId,
                                     @RequestBody CommentDto commentDto){
         commentService.editComment(orderId,commentDto);
