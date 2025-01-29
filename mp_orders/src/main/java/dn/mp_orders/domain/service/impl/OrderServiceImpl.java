@@ -111,7 +111,6 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException {
         Objects.requireNonNull(id, "id must not be null");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
-
         try {
             CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
                     () -> getWarehouseId(warehouseName), executorService);

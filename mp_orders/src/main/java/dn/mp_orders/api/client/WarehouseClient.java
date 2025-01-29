@@ -31,18 +31,17 @@ public class WarehouseClient {
                 .path(developerName)
                 .toUriString();
 
-
-            WarehouseResponse warehouseResponse = restClient.get()
+        WarehouseResponse warehouseResponse = restClient.get()
                     .uri(uri)
                     .retrieve()
                     .toEntity(WarehouseResponse.class)
                     .getBody();
-            if (warehouseResponse == null || warehouseResponse.getId() == null) {
+         if (warehouseResponse == null || warehouseResponse.getId() == null) {
                 throw new OrderNotFound("Заказ не найден на складе");
-            }
-            warehouseResponse.setId(warehouseResponse.getId());
-            warehouseResponse.setIsExists(true);
-            return warehouseResponse;
+          }
+         warehouseResponse.setId(warehouseResponse.getId());
+         warehouseResponse.setIsExists(true);
+         return warehouseResponse;
 
     }
 
