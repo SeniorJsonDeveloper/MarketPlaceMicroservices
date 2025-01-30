@@ -23,7 +23,7 @@ public class RedisConfig {
     @Value("${cache.redis.port}")
     private int port;
 
-    @Value("${cache.cacheNames.orders}")
+    @Value("${cache.cacheNames.orderList}")
     private String orders;
 
     @Value("${cache.cacheNames.orderById}")
@@ -35,7 +35,7 @@ public class RedisConfig {
     @Value("${cache.cacheNames.comment}")
     private String comment;
 
-    @Value("${cache.cacheNames.ordersWithPagination}")
+    @Value("${cache.cacheNames.orderListWithPagination}")
     private String ordersWithPagination;
 
 

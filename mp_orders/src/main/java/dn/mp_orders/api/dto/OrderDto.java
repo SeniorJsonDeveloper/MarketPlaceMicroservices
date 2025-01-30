@@ -1,4 +1,5 @@
 package dn.mp_orders.api.dto;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dn.mp_orders.domain.entity.CommentEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;

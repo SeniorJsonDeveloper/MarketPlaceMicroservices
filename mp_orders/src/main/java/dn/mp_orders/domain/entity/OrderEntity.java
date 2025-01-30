@@ -1,4 +1,5 @@
 package dn.mp_orders.domain.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -36,14 +37,19 @@ public class OrderEntity implements Serializable {
 
     private BigDecimal price;
 
+    @JsonIgnore
     private String userId;
 
+    @JsonIgnore
     private String itemId;
 
+    @JsonIgnore
     private String warehouseId;
 
+    @JsonIgnore
     private String userNumber;
 
+    @JsonIgnore
     private Boolean isActive;
 
     @Transient

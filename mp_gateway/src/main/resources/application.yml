@@ -15,6 +15,13 @@ spring:
             - Path=/notifications-api/**
           filters:
             - StripPrefix=1
+        - id: warehouse-route
+          uri: http://localhost:8081
+          predicates:
+          - Path=/warehouse-api/**
+          filters:
+          - StripPrefix=1
+
 
 server:
   port: 3000

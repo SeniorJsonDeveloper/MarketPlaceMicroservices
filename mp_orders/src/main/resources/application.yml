@@ -22,12 +22,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  devtools:
-    restart:
-      exclude: dn/mp_orders/api/dto/*
-
-
-
 
 
 
@@ -43,12 +37,6 @@ spring:
       ack-mode: manual
   main:
     allow-bean-definition-overriding: true
-  threads:
-    virtual:
-      enabled: true
-
-
-
 
 cache:
   redis:
@@ -57,9 +45,9 @@ cache:
   cacheNames:
     orderAfterCreate: orderAfterCreate
     orderById: orderById
-    orders: orderById
+    orderList: orders
     comment: comment
-    ordersWithPagination: ordersWithPagination
+    orderListWithPagination: ordersWithPagination
 
 
 
