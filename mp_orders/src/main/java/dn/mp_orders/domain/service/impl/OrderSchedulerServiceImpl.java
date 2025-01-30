@@ -36,9 +36,7 @@ public class OrderSchedulerServiceImpl implements OrderSchedulerService {
     public void cleanAllOrders() {
         try {
             OrderService proxy = applicationContext.getBean(OrderService.class);
-            List<OrderEntity> orders = proxy.getAllOrders()
-                    .getOrderDtoList().stream()
-                    .map(orderMapper::toEntity)
+            List<OrderEntity> orders = proxy.getOrderList().stream()
                     .toList();
             if (!orders.isEmpty()) {
                 log.warn("No orders found. Skipping cache cleaning.");

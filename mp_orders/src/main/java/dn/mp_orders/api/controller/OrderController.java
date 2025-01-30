@@ -1,6 +1,7 @@
 package dn.mp_orders.api.controller;
 
 import dn.mp_orders.api.dto.CommentDto;
+import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.service.CommentService;
@@ -38,7 +39,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Операция по поиску заказа на складе",responseCode = "200")
     public OrderDto getOrder(@PathVariable String id,
-                                               @RequestParam(required = false) String developerName) throws ExecutionException, InterruptedException {
+                            @RequestParam(required = false) String developerName) throws ExecutionException, InterruptedException {
         return orderService.findOrderOnWarehouse(id,developerName);
     }
 
@@ -52,9 +53,10 @@ public class OrderController {
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Операция по получению списка заказов с пагинацией",responseCode = "200")
-    public List<OrderEntity> getOrders(@RequestParam int pageSize,
-                                       @RequestParam int pageNumber) {
-        return orderService.getAllOrders(PageRequest.of(pageSize,pageNumber)).getContent();
+    public ListOrderDto getOrders(@RequestParam(defaultValue = "0") int pageNumber,
+                                  @RequestParam(defaultValue = "10") int pageSize) {
+        return orderService.getAllOrders(PageRequest.of(pageNumber,pageSize));
+
     }
 
     @PatchMapping("/edit/{id}")

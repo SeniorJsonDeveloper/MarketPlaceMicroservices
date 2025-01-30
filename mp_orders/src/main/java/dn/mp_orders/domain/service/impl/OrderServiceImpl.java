@@ -1,3 +1,4 @@
+
 package dn.mp_orders.domain.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -9,9 +10,7 @@ import dn.mp_orders.api.client.WarehouseResponse;
 import dn.mp_orders.api.mapper.OrderMapper;
 import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.exception.OrderNotFound;
-import dn.mp_orders.domain.repository.CommentRepository;
 import dn.mp_orders.domain.repository.OrderRepository;
-import dn.mp_orders.domain.service.CommentService;
 import dn.mp_orders.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -22,8 +21,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -58,36 +57,38 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-
+    private final OrderMapper orderMapper;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     private final Gson gson;
 
-    private final ApplicationContext applicationContext;
-
     private final WarehouseClient warehouseClient;
 
-    @Override
-    @Cacheable(cacheNames = "orderListWithPagination",key = "#result.pageable.first()")
-    public Page<OrderEntity> getAllOrders(Pageable pageable) {
-        try {
-            if (pageable == null) {
-                pageable = PageRequest.of(0, 10);
-            }
-            return orderRepository.findAll(pageable);
 
-        } catch (DataAccessException e) {
-            log.error("Не удалось получить список заказов", e);
-            return Page.empty();
+    @Override
+    public ListOrderDto getAllOrders(Pageable pageable) {
+
+        if (pageable == null || pageable.isUnpaged() || pageable.getPageSize() == 0) {
+            pageable = PageRequest.of(0, 10);
         }
+
+        Page<OrderEntity> orders = orderRepository.findAll(pageable);
+
+
+        if (orders.getContent().isEmpty()) {
+            throw new IllegalArgumentException("No orders found");
+        }
+
+        return new ListOrderDto(orders.getContent()
+                        .stream()
+                        .map(orderMapper::toDto)
+                        .toList(), (int) orders.getTotalElements()
+        );
     }
 
-    @Override
-    @Cacheable(cacheNames = "orderList")
-    public ListOrderDto getAllOrders() {
-        return mapToListOrderDto(orderRepository.findAll());
-    }
+
+
 
     @Override
     public List<OrderEntity> getOrderList() {
@@ -149,7 +150,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDto findOrderById(String id) {
-        return mapToDto(orderRepository.findById(id)
+        return orderMapper.toDto(orderRepository.findById(id)
                 .orElseThrow(()-> new OrderNotFound("Order not found")));
     }
 
@@ -213,7 +214,7 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
 
-        var dto = mapToDto(order);
+        var dto = orderMapper.toDto(order);
         log.info("Saved order: {}", dto);
 //        try {
 //            sendAsyncMessage(dto);
@@ -266,7 +267,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findById(id).ifPresentOrElse(o->{
                     o.setStatus(order.getStatus());
                     orderRepository.save(o);
-                    sendAsyncMessage(mapToDto(o));
+                    sendAsyncMessage(orderMapper.toDto(o));
                     log.info("UPDATED STATUS: {}", order.getStatus());
                 }, ()-> {
                     throw new OrderNotFound("Order not found");
@@ -275,33 +276,7 @@ public class OrderServiceImpl implements OrderService {
 
 
 
-
-    public OrderDto mapToDto(OrderEntity order) {
-        if (order == null) {
-            throw new OrderNotFound("Order not found");
         }
-        OrderDto orderDto = new OrderDto();
-        orderDto.setId(order.getId());
-        orderDto.setName(order.getName());
-        orderDto.setMessage(order.getMessage());
-        orderDto.setStatus(order.getStatus());
-        orderDto.setPrice(order.getPrice());
-        orderDto.setWarehouseId(order.getWarehouseId());
-        return orderDto;
     }
 
-    private ListOrderDto mapToListOrderDto(List<OrderEntity> orders) {
-
-        if (orders == null || orders.isEmpty()) {
-            return new ListOrderDto();
-        }
-        ListOrderDto listOrderDto = new ListOrderDto();
-        listOrderDto.setOrderDtoList(orders.stream()
-                .map(this::mapToDto)
-                .collect(Collectors.toList()));
-        return listOrderDto;
-    }
-
-
-}
 

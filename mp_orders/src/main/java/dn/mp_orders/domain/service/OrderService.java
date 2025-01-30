@@ -11,9 +11,8 @@ import java.util.concurrent.ExecutionException;
 
 public interface OrderService {
 
-    Page<OrderEntity> getAllOrders(Pageable pageable);
 
-    ListOrderDto getAllOrders();
+    ListOrderDto getAllOrders(Pageable pageable);
 
     List<OrderEntity> getOrderList();
 
