@@ -3,8 +3,10 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dn.mp_orders.api.client.WarehouseClient;
 import dn.mp_orders.api.dto.KafkaRecord;
+import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.api.client.WarehouseResponse;
+import dn.mp_orders.api.mapper.OrderMapper;
 import dn.mp_orders.domain.entity.CommentEntity;
 import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.exception.OrderNotFound;
@@ -30,9 +32,6 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
-
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -65,6 +64,8 @@ public class OrderServiceImpl implements OrderService {
 
     private final CommentRepository commentRepository;
 
+    private final OrderMapper orderMapper;
+
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     private final Gson gson;
@@ -90,7 +91,12 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Cacheable(cacheNames = "orderList")
-    public List<OrderEntity> getAllOrders() {
+    public ListOrderDto getAllOrders() {
+        return mapToListOrderDto(orderRepository.findAll());
+    }
+
+    @Override
+    public List<OrderEntity> getOrderList() {
         return orderRepository.findAll();
     }
 
@@ -111,39 +117,46 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException {
         Objects.requireNonNull(id, "id must not be null");
         ExecutorService executorService = Executors.newFixedThreadPool(2);
+        var orderId = findOrderById(id);
         try {
             CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
-                    () -> getWarehouseId(warehouseName), executorService);
+                            () -> getWarehouseId(warehouseName), executorService)
+                    .thenApply(warehouseId -> {
+                        warehouseId.setIsExists(true);
+                        return warehouseId;
+                    }).handle((r, e) -> {
+                        if (e != null) {
+                            log.info("Exception from wareHouseTask is: {}", e.getMessage());
+                        }
+                        return r;
+                    });
 
-            CompletableFuture<OrderEntity> orderTask = CompletableFuture.supplyAsync(
-                    () -> findOrderById(id), executorService);
-
-            CompletableFuture<Void> allTasks = CompletableFuture.allOf(warehouseTask, orderTask);
-            allTasks.join();
-
-            var warehouseResponse = warehouseTask.get();
-            if (!warehouseResponse.getIsExists()) {
-                throw new OrderNotFound("Order not found");
-            }
-            var order = orderTask.get();
-            order.setWarehouseId(warehouseResponse.getId());
-            log.info("Warehouse id is: {}", warehouseResponse.getId());
-            log.info("Warehouse boolean is: {}", warehouseResponse.getIsExists());
-            return mapToDto(order);
-
-        } finally {
+            CompletableFuture<OrderDto> orderTask = CompletableFuture.supplyAsync(
+                    () -> orderId, executorService).thenCombineAsync(
+                    warehouseTask, (order, wareHouseResponse) -> {
+                        order.setWarehouseId(wareHouseResponse.getId());
+                        order.setIsExists(wareHouseResponse.getIsExists());
+                        return order;
+                    }, executorService
+            ).handle((order, exception) -> {
+                if (exception != null) {
+                    log.info("Exception from orderTask is: {}", exception.getMessage());
+                    throw new RuntimeException(exception.getMessage(), exception.getCause());
+                }
+                return order;
+            });
+            return orderTask.get();
+        }finally {
             executorService.shutdown();
-            if (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-            }
         }
 
     }
 
+
     @Override
-    public OrderEntity findOrderById(String id) {
-        return orderRepository.findById(id)
-                .orElseThrow(()-> new OrderNotFound("Order not found"));
+    public OrderDto findOrderById(String id) {
+        return mapToDto(orderRepository.findById(id)
+                .orElseThrow(()-> new OrderNotFound("Order not found")));
     }
 
     @SneakyThrows
@@ -217,9 +230,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-
-
     @Override
     public void delete(String id) {
         if (id == null || id.isBlank()) {
@@ -288,7 +298,10 @@ public class OrderServiceImpl implements OrderService {
     public void cleanAllOrders(){
         try {
             OrderService proxy = applicationContext.getBean(OrderService.class);
-            List<OrderEntity> orders = proxy.getAllOrders();
+            List<OrderEntity> orders = proxy.getAllOrders()
+                    .getOrderDtoList().stream()
+                    .map(orderMapper::toEntity)
+                    .toList();
             if (!orders.isEmpty()) {
                 log.warn("No orders found. Skipping cache cleaning.");
             }
@@ -300,18 +313,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-
     public WarehouseResponse getWarehouseId(String developerName) {
         return warehouseClient.getWarehouseId(developerName);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleOrderSavedEvent(OrderSavedEvent event) {
-        sendMessage(event.getOrderDto());
-    }
 
-    private  static  OrderDto mapToDto(OrderEntity order) {
+    public OrderDto mapToDto(OrderEntity order) {
         if (order == null) {
             throw new OrderNotFound("Order not found");
         }
@@ -323,6 +330,18 @@ public class OrderServiceImpl implements OrderService {
         orderDto.setPrice(order.getPrice());
         orderDto.setWarehouseId(order.getWarehouseId());
         return orderDto;
+    }
+
+    private ListOrderDto mapToListOrderDto(List<OrderEntity> orders) {
+
+        if (orders == null || orders.isEmpty()) {
+            return new ListOrderDto();
+        }
+        ListOrderDto listOrderDto = new ListOrderDto();
+        listOrderDto.setOrderDtoList(orders.stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList()));
+        return listOrderDto;
     }
 
 

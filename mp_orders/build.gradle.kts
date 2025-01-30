@@ -39,7 +39,6 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("redis.clients:jedis:5.2.0")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch:3.4.0")
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-logging
     implementation("org.springframework.boot:spring-boot-starter-logging:3.3.6")
     // https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit

@@ -22,12 +22,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  devtools:
-    restart:
-      exclude: dn/mp_orders/api/dto/*
-
-
-
 
 
 

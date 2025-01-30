@@ -2,10 +2,7 @@ package dn.mp_orders.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,15 +18,14 @@ public class CommentDto {
     @JsonIgnore
     private String id;
 
-    @NotBlank
-    @Size(min = 5,max = 255)
+    @Size(min = 1,max = 255,message = "Text cant be empty")
     private String text;
 
-    @PositiveOrZero
-    @NotNull
+    @Min(value = 1,message = "Rating cant be <1")
+    @Max(value = 5,message = "Rating cant be >5")
     private int rating;
 
-    @JsonIgnore
+    @NotBlank
     private String orderId;
 
     @JsonIgnore
