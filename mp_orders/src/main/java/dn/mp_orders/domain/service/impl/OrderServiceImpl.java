@@ -7,7 +7,6 @@ import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.api.client.WarehouseResponse;
 import dn.mp_orders.api.mapper.OrderMapper;
-import dn.mp_orders.domain.entity.CommentEntity;
 import dn.mp_orders.domain.entity.OrderEntity;
 import dn.mp_orders.domain.exception.OrderNotFound;
 import dn.mp_orders.domain.repository.CommentRepository;
@@ -30,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.*;
@@ -60,11 +58,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
 
-    private final CommentService commentService;
 
-    private final CommentRepository commentRepository;
-
-    private final OrderMapper orderMapper;
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -75,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
     private final WarehouseClient warehouseClient;
 
     @Override
-    @Cacheable(cacheNames = "orderListWithPagination")
+    @Cacheable(cacheNames = "orderListWithPagination",key = "#result.pageable.first()")
     public Page<OrderEntity> getAllOrders(Pageable pageable) {
         try {
             if (pageable == null) {
@@ -279,38 +273,7 @@ public class OrderServiceImpl implements OrderService {
                 });
     }
 
-    @Scheduled(cron = "0 0 * * * *")
-    public void getAvgRatingByComments(){
-        try {
-            List<CommentEntity> comments = (List<CommentEntity>) commentRepository.findAll();
-            if (comments.isEmpty()) {
-                log.warn("No comments found. Skipping average rating calculation.");
-                return;
-            }
-            var rating = commentService.getRatingByComments(comments);
-            log.info("Average Rating: {}",rating);
-        } catch (Exception e) {
-            log.error("Failed to calculate average rating: {}", e.getMessage(), e);
-        }
-    }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void cleanAllOrders(){
-        try {
-            OrderService proxy = applicationContext.getBean(OrderService.class);
-            List<OrderEntity> orders = proxy.getAllOrders()
-                    .getOrderDtoList().stream()
-                    .map(orderMapper::toEntity)
-                    .toList();
-            if (!orders.isEmpty()) {
-                log.warn("No orders found. Skipping cache cleaning.");
-            }
-            orderRepository.deleteAll(orders);
-            log.info("Cache cleaned: {}", orders.stream().map(OrderEntity::getId).toList());
-        }catch (Exception e){
-            log.error("Failed to clean cache: {}", e.getMessage(), e);
-        }
-    }
 
 
     public OrderDto mapToDto(OrderEntity order) {

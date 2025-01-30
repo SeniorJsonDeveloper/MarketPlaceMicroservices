@@ -31,9 +31,6 @@ public interface OrderService {
 
     Double getTotalRating(List<OrderEntity> orders);
 
-    void getAvgRatingByComments();
-
-    void cleanAllOrders();
 
 
 
