@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
     private final WarehouseClient warehouseClient;
 
     @Override
-    @Cacheable(cacheNames = "ordersWithPagination")
+    @Cacheable(cacheNames = "orderListWithPagination")
     public Page<OrderEntity> getAllOrders(Pageable pageable) {
         try {
             if (pageable == null) {
@@ -120,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
         var orderId = findOrderById(id);
         try {
             CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
-                            () -> getWarehouseId(warehouseName), executorService)
+                            () -> warehouseClient.getWarehouseId(warehouseName), executorService)
                     .thenApply(warehouseId -> {
                         warehouseId.setIsExists(true);
                         return warehouseId;
@@ -310,11 +310,6 @@ public class OrderServiceImpl implements OrderService {
         }catch (Exception e){
             log.error("Failed to clean cache: {}", e.getMessage(), e);
         }
-    }
-
-
-    public WarehouseResponse getWarehouseId(String developerName) {
-        return warehouseClient.getWarehouseId(developerName);
     }
 
 

@@ -37,12 +37,6 @@ spring:
       ack-mode: manual
   main:
     allow-bean-definition-overriding: true
-  threads:
-    virtual:
-      enabled: true
-
-
-
 
 cache:
   redis:
@@ -51,9 +45,9 @@ cache:
   cacheNames:
     orderAfterCreate: orderAfterCreate
     orderById: orderById
-    orders: orderById
+    orderList: orders
     comment: comment
-    ordersWithPagination: ordersWithPagination
+    orderListWithPagination: ordersWithPagination
 
 
 
