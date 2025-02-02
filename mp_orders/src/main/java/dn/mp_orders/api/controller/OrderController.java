@@ -36,7 +36,7 @@ public class OrderController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponse(description = "Операция по созданию заказа",responseCode = "201")
-    private OrderDto createOrder(@Valid @RequestBody OrderDto order) {
+    public OrderDto createOrder(@Valid @RequestBody OrderDto order) {
         return orderService.create(order);
     }
 
@@ -57,10 +57,6 @@ public class OrderController {
         orderService.delete(id);
     }
 
-    @GetMapping("/clientRequest")
-    public WarehouseResponse warehouseResponse(@RequestParam String developerName){
-        return warehouseClient.getWarehouseId(developerName);
-    }
 
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
