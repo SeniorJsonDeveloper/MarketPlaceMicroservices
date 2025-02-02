@@ -21,8 +21,6 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private final WareHouseRepository wareHouseRepository;
 
-    private final ProductRepository productRepository;
-
 
     @Override
     public void registerWarehouse() {

@@ -29,7 +29,13 @@ public interface OrderService {
 
     void updateOrderStatus(String id, OrderDto order);
 
-    Double getTotalRating(List<OrderEntity> orders);
+    default Double getTotalRating(List<OrderEntity> orders){
+        if (orders == null || orders.isEmpty()) return 0.0;
+        return orders.stream()
+                .mapToDouble(OrderEntity::getRating)
+                .average()
+                .orElse(0.0);
+    }
 
 
 

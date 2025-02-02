@@ -147,8 +147,7 @@ public class OrderServiceImpl implements OrderService {
         JsonObject jsonObject = getJsonObject(orderDto);
         String result = gson.toJson(jsonObject);
         log.info("Kafka message: {}", result);
-        CompletableFuture
-                .supplyAsync(() -> kafkaTemplate.send(OTNTopicName, result))
+        CompletableFuture.supplyAsync(() -> kafkaTemplate.send(OTNTopicName, result))
                 .thenCompose(message -> message.whenComplete((r, e) -> {
                     if (e == null) {
                         log.info("Sent message to warehouse successful: {}", r);
