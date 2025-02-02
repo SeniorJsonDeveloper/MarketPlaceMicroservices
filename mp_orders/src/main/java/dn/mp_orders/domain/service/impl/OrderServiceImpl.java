@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -122,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
                 warehouseTask,(o,warehouseResponse)->{
                  o.setWarehouseId(warehouseResponse.getId());
                  o.setIsExists(warehouseResponse.getIsExists());
+                 o.setCountOfProducts(warehouseResponse.getCountOfProducts());
                  return o;
                 }).exceptionally(
                         ex->{
@@ -145,8 +147,7 @@ public class OrderServiceImpl implements OrderService {
         JsonObject jsonObject = getJsonObject(orderDto);
         String result = gson.toJson(jsonObject);
         log.info("Kafka message: {}", result);
-        CompletableFuture
-                .supplyAsync(() -> kafkaTemplate.send(OTNTopicName, result))
+        CompletableFuture.supplyAsync(() -> kafkaTemplate.send(OTNTopicName, result))
                 .thenCompose(message -> message.whenComplete((r, e) -> {
                     if (e == null) {
                         log.info("Sent message to warehouse successful: {}", r);

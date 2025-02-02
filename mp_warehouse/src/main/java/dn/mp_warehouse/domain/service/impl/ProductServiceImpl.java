@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.errors.ResourceNotFoundException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.domain.Page;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
@@ -29,11 +31,9 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
 
-    private final RabbitTemplate rabbitTemplate;
-
     private final ProductMapper productMapper;
 
-    private final WareHouseRepository wareHouseRepository;
+    private final KafkaTemplate<String,Object> kafkaTemplate;
 
 
     @Override
@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
 //                                    .orElseThrow(()->new ResourceNotFoundException(""));
 //                    map.put(wareHouseId.getId(),o);
                     productRepository.save(o);
-                    rabbitTemplate.convertAndSend(o);
+                    kafkaTemplate.send((Message<?>) o);
                 },()-> {
                     throw new ProductNotFoundException("");
          });
@@ -105,6 +105,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Long getCount(String id) {
         ProductEntity product = productMapper.toEntity(findById(id));
-        return product.getCount();
+        return product.getCountOfProducts();
     }
 }

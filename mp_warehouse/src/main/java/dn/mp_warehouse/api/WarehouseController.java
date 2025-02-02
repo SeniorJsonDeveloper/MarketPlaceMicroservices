@@ -1,6 +1,7 @@
 package dn.mp_warehouse.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dn.mp_warehouse.api.dto.WarehouseDto;
 import dn.mp_warehouse.domain.ProductEntity;
 import dn.mp_warehouse.domain.WareHouseEntity;
 import dn.mp_warehouse.domain.repository.ProductRepository;
@@ -23,7 +24,7 @@ public class WarehouseController {
 
 
     @GetMapping("/{developerName}")
-    public WareHouseEntity getWarehouseName(@PathVariable String developerName) {
+    public WarehouseDto getWarehouseName(@PathVariable String developerName) {
         return warehouseService.getWarehouseByName(developerName);
     }
 }

@@ -1,6 +1,8 @@
 package dn.mp_warehouse.domain.service.impl;
 
 
+import dn.mp_warehouse.api.dto.WarehouseDto;
+import dn.mp_warehouse.domain.ProductEntity;
 import dn.mp_warehouse.domain.WareHouseEntity;
 import dn.mp_warehouse.domain.repository.ProductRepository;
 import dn.mp_warehouse.domain.repository.WareHouseRepository;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -17,8 +20,6 @@ import java.util.Optional;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WareHouseRepository wareHouseRepository;
-
-    private final ProductRepository productRepository;
 
 
     @Override
@@ -32,29 +33,63 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WareHouseEntity getWarehouseByName(String developerName) {
-        var warehouse = wareHouseRepository.findByDeveloperName(developerName);
-        var productCountOnWarehouse = warehouse.get().getCountOfProducts();
-        if (productCountOnWarehouse == null) {
-            throw new RuntimeException("Продукт не найден");
-        }
-        WareHouseEntity wareHouseEntity = warehouse.get();
-        if (warehouse.isPresent()) {
-            wareHouseEntity.setId(warehouse.get().getId());
-            wareHouseEntity.setName(warehouse.get().getName());
-            wareHouseEntity.setIsExists(true);
-            wareHouseEntity.setCountOfProducts(productCountOnWarehouse);
-            log.info("WarehouseInfo is: {},{},{},{}",warehouse.get().getId(),
-                    warehouse.get().getName(),warehouse.get().getIsExists(),
-                    warehouse.get().getCountOfProducts());
-            return wareHouseEntity;
-        }
-        else {
-            wareHouseEntity.setId(null);
-            wareHouseEntity.setName(null);
-            wareHouseEntity.setIsExists(false);
-            return new WareHouseEntity();
-        }
+    public WarehouseDto getWarehouseByName(String developerName) {
 
+            if (developerName == null || developerName.isBlank()) {
+                throw new IllegalArgumentException("Developer name must not be null or empty");
+            }
+
+            var warehouse = wareHouseRepository.findByDeveloperName(developerName);
+
+            if (warehouse.isPresent()) {
+                WareHouseEntity originalEntity = warehouse.get();
+                var countOfProducts = originalEntity.getProducts()
+                        .stream()
+                        .mapToLong(ProductEntity::getCountOfProducts)
+                        .sum();
+
+                WarehouseDto warehouseDto = new WarehouseDto();
+                warehouseDto.setId(originalEntity.getId());
+                warehouseDto.setName(developerName);
+                warehouseDto.setIsExists(true);
+                warehouseDto.setCountOfProducts(countOfProducts);
+
+
+                log.info("WarehouseInfo is: {}, {}, {}, {}", warehouseDto.getId(),
+                        warehouseDto.getName(), warehouseDto.getIsExists(),
+                        warehouseDto.getCountOfProducts());
+
+                return warehouseDto;
+            } else {
+                return new WarehouseDto();
+            }
+        }
     }
-}
+//        var warehouse = wareHouseRepository.findByDeveloperName(developerName);
+//
+//        if (warehouse.isPresent()) {
+//            WareHouseEntity wareHouseEntity = warehouse.get();
+//            var countOfProducts = warehouse.get().getProducts()
+//                    .stream()
+//                    .mapToLong(ProductEntity::getCountOfProducts)
+//                    .sum();
+//
+//            wareHouseEntity.setId(warehouse.get().getId());
+//            wareHouseEntity.setName(warehouse.get().getName());
+//            wareHouseEntity.setIsExists(true);
+//            wareHouseEntity.setCountOfProducts(countOfProducts);
+//            log.info("WarehouseInfo is: {},{},{},{}", warehouse.get().getId(),
+//                    warehouse.get().getName(), warehouse.get().getIsExists(),
+//                    warehouse.get().getCountOfProducts());
+//            return wareHouseEntity;
+//        }
+//
+//        else {
+//            return WareHouseEntity
+//                    .builder()
+//                    .isExists(false)
+//                    .build();
+//        }
+
+
+

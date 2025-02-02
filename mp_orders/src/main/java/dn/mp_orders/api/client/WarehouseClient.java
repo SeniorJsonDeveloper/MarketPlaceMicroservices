@@ -1,15 +1,14 @@
 package dn.mp_orders.api.client;
-
 import dn.mp_orders.domain.exception.OrderNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.net.http.HttpRequest;
 import java.util.Objects;
 
 @Component
@@ -21,7 +20,6 @@ public class WarehouseClient {
     private String warehouseUrl;
 
     private final RestClient restClient;
-
 
     public WarehouseResponse getWarehouseId(String developerName) {
         String uri = UriComponentsBuilder.fromUri(URI.create(warehouseUrl))
@@ -36,11 +34,12 @@ public class WarehouseClient {
                 .toEntity(WarehouseResponse.class)
                 .getBody();
         log.info(Objects.requireNonNull(warehouseResponse).toString());
-        if (warehouseResponse.getId() == null) {
+        if(warehouseResponse.getId() == null) {
             throw new OrderNotFound("Заказ не найден на складе");
         }
         warehouseResponse.setId(warehouseResponse.getId());
         warehouseResponse.setIsExists(true);
+        warehouseResponse.setCountOfProducts(warehouseResponse.getCountOfProducts());
         return warehouseResponse;
     }
 
