@@ -24,8 +24,6 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${spring.kafka.listener.ack-mode}")
-    private String ackMode;
 
     @Bean
     public DefaultKafkaProducerFactory<String, String> producerFactory(ObjectMapper objectMapper) {
@@ -33,7 +31,6 @@ public class KafkaConfig {
         producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        producerProperties.put(ProducerConfig.ACKS_CONFIG,ackMode);
         return new DefaultKafkaProducerFactory<>(producerProperties);
     }
 

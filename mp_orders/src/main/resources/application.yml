@@ -33,8 +33,6 @@ spring:
     topic:
       name: OrderToNotifications
       second_name: OrderToWarehouse
-    listener:
-      ack-mode: manual
   main:
     allow-bean-definition-overriding: true
 

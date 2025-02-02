@@ -42,8 +42,8 @@ public class ProductEntity {
     @Column(unique = true)
     private String sellerId;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    private WareHouseEntity warehouse;
+//    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+//    private WareHouseEntity warehouse;
 
 
 }

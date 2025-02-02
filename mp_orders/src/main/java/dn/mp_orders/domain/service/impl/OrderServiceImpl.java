@@ -19,19 +19,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -108,44 +105,33 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @Override
-    public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException {
-        Objects.requireNonNull(id, "id must not be null");
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
-        var orderId = findOrderById(id);
-        try {
-            CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
-                            () -> warehouseClient.getWarehouseId(warehouseName), executorService)
-                    .thenApply(warehouseId -> {
-                        warehouseId.setIsExists(true);
-                        return warehouseId;
-                    }).handle((r, e) -> {
-                        if (e != null) {
-                            log.info("Exception from wareHouseTask is: {}", e.getMessage());
-                        }
-                        return r;
-                    });
 
-            CompletableFuture<OrderDto> orderTask = CompletableFuture.supplyAsync(
-                    () -> orderId, executorService).thenCombineAsync(
-                    warehouseTask, (order, wareHouseResponse) -> {
-                        order.setWarehouseId(wareHouseResponse.getId());
-                        order.setIsExists(wareHouseResponse.getIsExists());
-                        return order;
-                    }, executorService
-            ).handle((order, exception) -> {
-                if (exception != null) {
-                    log.info("Exception from orderTask is: {}", exception.getMessage());
-                    throw new RuntimeException(exception.getMessage(), exception.getCause());
-                }
-                return order;
-            });
-            return orderTask.get();
-        }finally {
-            executorService.shutdown();
-        }
+
+    @Override
+    public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException,
+                                                                               InterruptedException,
+                                                                                 TimeoutException {
+        Objects.requireNonNull(id, "id must not be null");
+        CompletableFuture<OrderDto> orderTask = CompletableFuture.supplyAsync(
+                ()->findOrderById(id)
+        );
+        CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
+                ()->warehouseClient.getWarehouseId(warehouseName)
+        );
+        return orderTask.thenCombine(
+                warehouseTask,(o,warehouseResponse)->{
+                 o.setWarehouseId(warehouseResponse.getId());
+                 o.setIsExists(warehouseResponse.getIsExists());
+                 return o;
+                }).exceptionally(
+                        ex->{
+                            throw new RuntimeException(ex.getMessage(),ex.getCause());
+                        }).get(5, TimeUnit.SECONDS);
+
 
     }
+
+
 
 
     @Override
@@ -154,32 +140,42 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(()-> new OrderNotFound("Order not found")));
     }
 
-    @SneakyThrows
+
     public void sendMessage(final OrderDto orderDto) {
         JsonObject jsonObject = getJsonObject(orderDto);
         String result = gson.toJson(jsonObject);
         log.info("Kafka message: {}", result);
-
-        CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(OTNTopicName, result);
-        future.whenComplete((r, e) -> {
-            if (e == null) {
-                log.info("Kafka sent successfully. Offset: {}, Message: {}", r.getRecordMetadata().offset(), result);
-            } else {
-                log.error("Failed to send to Kafka. Reason: {}", e.getMessage(), e);
-            }
-        });
+        CompletableFuture
+                .supplyAsync(() -> kafkaTemplate.send(OTNTopicName, result))
+                .thenCompose(message -> message.whenComplete((r, e) -> {
+                    if (e == null) {
+                        log.info("Sent message to warehouse successful: {}", r);
+                        log.info("Metadata of message: {}", r.getRecordMetadata().topic());
+                    } else {
+                        log.error("Failed to send to Kafka. Reason: {}", e.getMessage(), e);
+                    }
+                }))
+                .thenCompose(r -> kafkaTemplate.send(OTWTopicName, result))
+                .whenComplete((r, e) -> {
+                    if (e == null) {
+                        log.info("Sent second message successfully.");
+                    } else {
+                        log.error("Failed to send second message to Kafka. Reason: {}", e.getMessage());
+                    }
+                })
+                .exceptionally(e -> {
+                    log.error("Unhandled error: {}", e.getMessage());
+                    return null;
+                });
     }
 
-    @Async
-    public void sendAsyncMessage(final OrderDto orderDto) {
-        CompletableFuture.runAsync(() -> {
-            try {
-                sendMessage(orderDto);
-            } catch (Exception e) {
-                log.error("Failed send message to Kafka: {}", orderDto.getId());
-            }
-        });
-    }
+
+
+
+
+
+
+
 
     private static JsonObject getJsonObject(OrderDto orderDto) {
         KafkaRecord kafkaRecord = new KafkaRecord();
@@ -216,11 +212,11 @@ public class OrderServiceImpl implements OrderService {
 
         var dto = orderMapper.toDto(order);
         log.info("Saved order: {}", dto);
-//        try {
-//            sendAsyncMessage(dto);
-//        } catch (Exception e) {
-//            log.error("Failed to send message to Kafka: {}", dto.getId());
-//        }
+        try {
+            sendMessage(dto);
+        } catch (Exception e) {
+            log.error("Failed to send message to Kafka: {}", dto.getId());
+        }
         return dto;
     }
 
@@ -267,7 +263,7 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findById(id).ifPresentOrElse(o->{
                     o.setStatus(order.getStatus());
                     orderRepository.save(o);
-                    sendAsyncMessage(orderMapper.toDto(o));
+                    sendMessage(orderMapper.toDto(o));
                     log.info("UPDATED STATUS: {}", order.getStatus());
                 }, ()-> {
                     throw new OrderNotFound("Order not found");
@@ -277,6 +273,6 @@ public class OrderServiceImpl implements OrderService {
 
 
         }
-    }
+
 
 

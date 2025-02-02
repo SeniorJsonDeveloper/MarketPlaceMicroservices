@@ -1,5 +1,7 @@
 package dn.mp_orders.api.controller;
 
+import dn.mp_orders.api.client.WarehouseClient;
+import dn.mp_orders.api.client.WarehouseResponse;
 import dn.mp_orders.api.dto.CommentDto;
 import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
@@ -16,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping("/api/v1/order")
@@ -26,6 +29,8 @@ public class OrderController {
     private final OrderService orderService;
 
     private final CommentService commentService;
+
+    private final WarehouseClient warehouseClient;
 
 
     @PostMapping("/create")
@@ -39,7 +44,9 @@ public class OrderController {
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Операция по поиску заказа на складе",responseCode = "200")
     public OrderDto getOrder(@PathVariable String id,
-                            @RequestParam(required = false) String developerName) throws ExecutionException, InterruptedException {
+                             @RequestParam(required = false) String developerName) throws ExecutionException,
+                                                                                         InterruptedException,
+                                                                                          TimeoutException {
         return orderService.findOrderOnWarehouse(id,developerName);
     }
 
@@ -48,6 +55,11 @@ public class OrderController {
     @ApiResponse(description = "Операция по поиску удалению",responseCode = "204")
     public void deleteOrder(@PathVariable String id) {
         orderService.delete(id);
+    }
+
+    @GetMapping("/clientRequest")
+    public WarehouseResponse warehouseResponse(@RequestParam String developerName){
+        return warehouseClient.getWarehouseId(developerName);
     }
 
     @GetMapping("/list")

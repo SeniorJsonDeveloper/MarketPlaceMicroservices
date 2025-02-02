@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 public interface OrderService {
 
@@ -18,7 +19,7 @@ public interface OrderService {
 
     OrderDto create(OrderDto order);
 
-    OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException;
+    OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException, TimeoutException;
 
     OrderDto findOrderById(String id);
 
