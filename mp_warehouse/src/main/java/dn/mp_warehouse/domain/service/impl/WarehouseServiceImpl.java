@@ -2,6 +2,7 @@ package dn.mp_warehouse.domain.service.impl;
 
 
 import dn.mp_warehouse.domain.WareHouseEntity;
+import dn.mp_warehouse.domain.repository.ProductRepository;
 import dn.mp_warehouse.domain.repository.WareHouseRepository;
 import dn.mp_warehouse.domain.service.WarehouseService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,8 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private final WareHouseRepository wareHouseRepository;
 
+    private final ProductRepository productRepository;
+
 
     @Override
     public void registerWarehouse() {
@@ -31,13 +34,19 @@ public class WarehouseServiceImpl implements WarehouseService {
     @Override
     public WareHouseEntity getWarehouseByName(String developerName) {
         var warehouse = wareHouseRepository.findByDeveloperName(developerName);
+        var productCountOnWarehouse = warehouse.get().getCountOfProducts();
+        if (productCountOnWarehouse == null) {
+            throw new RuntimeException("Продукт не найден");
+        }
         WareHouseEntity wareHouseEntity = warehouse.get();
         if (warehouse.isPresent()) {
             wareHouseEntity.setId(warehouse.get().getId());
             wareHouseEntity.setName(warehouse.get().getName());
             wareHouseEntity.setIsExists(true);
-            log.info("WarehouseInfo is: {},{},{}",warehouse.get().getId(),
-                    warehouse.get().getName(),warehouse.get().getIsExists());
+            wareHouseEntity.setCountOfProducts(productCountOnWarehouse);
+            log.info("WarehouseInfo is: {},{},{},{}",warehouse.get().getId(),
+                    warehouse.get().getName(),warehouse.get().getIsExists(),
+                    warehouse.get().getCountOfProducts());
             return wareHouseEntity;
         }
         else {
