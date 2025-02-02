@@ -78,9 +78,9 @@ public class ProductServiceImpl implements ProductService {
                     o.setBuyerId(productInputDto.getBuyerId());
                     o.setSellerId(productInputDto.getSellerId());
                     Map<String,ProductEntity> map = new HashMap<>();
-                    var wareHouseId = wareHouseRepository.findById(o.getWarehouse().getId())
-                                    .orElseThrow(()->new ResourceNotFoundException(""));
-                    map.put(wareHouseId.getId(),o);
+//                    var wareHouseId = wareHouseRepository.findById(o.getWarehouse().getId())
+//                                    .orElseThrow(()->new ResourceNotFoundException(""));
+//                    map.put(wareHouseId.getId(),o);
                     productRepository.save(o);
                     rabbitTemplate.convertAndSend(o);
                 },()-> {

@@ -4,11 +4,13 @@ import dn.mp_orders.domain.exception.OrderNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -27,19 +29,19 @@ public class WarehouseClient {
                 .path(developerName)
                 .toUriString();
 
-        WarehouseResponse warehouseResponse = restClient.get()
-                    .uri(uri)
-                    .retrieve()
-                    .toEntity(WarehouseResponse.class)
-                    .getBody();
-
-         if (warehouseResponse == null || warehouseResponse.getId() == null) {
-                throw new OrderNotFound("Заказ не найден на складе");
-         }
-         warehouseResponse.setId(warehouseResponse.getId());
-         warehouseResponse.setIsExists(true);
-         return warehouseResponse;
-
+        WarehouseResponse warehouseResponse = restClient
+                .get()
+                .uri(uri)
+                .retrieve()
+                .toEntity(WarehouseResponse.class)
+                .getBody();
+        log.info(Objects.requireNonNull(warehouseResponse).toString());
+        if (warehouseResponse.getId() == null) {
+            throw new OrderNotFound("Заказ не найден на складе");
+        }
+        warehouseResponse.setId(warehouseResponse.getId());
+        warehouseResponse.setIsExists(true);
+        return warehouseResponse;
     }
 
 

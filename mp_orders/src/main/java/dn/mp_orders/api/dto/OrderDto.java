@@ -49,6 +49,8 @@ public class OrderDto {
 
     private List<CommentEntity> comments;
 
+    private Long countOfItems;
+
     @Override
     public String toString() {
         return "OrderDto{" +

@@ -2,6 +2,7 @@ package dn.mp_warehouse.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class WareHouseEntity {
+public class WareHouseEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -20,10 +21,10 @@ public class WareHouseEntity {
 
     private String name;
 
-    @OneToMany(mappedBy = "warehouse")
-    private List<ProductEntity> products = new ArrayList<>();
+//    @OneToMany(mappedBy = "warehouse")
+//    private List<ProductEntity> products = new ArrayList<>();
 
-    @Column(nullable = false)
+
     private String developerName;
 
     private Boolean isExists;
