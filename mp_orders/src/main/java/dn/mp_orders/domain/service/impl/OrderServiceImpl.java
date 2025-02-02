@@ -130,45 +130,6 @@ public class OrderServiceImpl implements OrderService {
 
 
     }
-//        try {
-//            CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
-//                            () -> warehouseClient.getWarehouseId(warehouseName),
-//                            executorService)
-//                    .thenApply(warehouseId -> {
-//                        log.info("Warehouse id is: {}",warehouseId.getId());
-//                        warehouseId.setId(warehouseId.getId());
-//                        warehouseId.setIsExists(true);
-//                        return warehouseId;
-//                    }).handle((r, e) -> {
-//                        if (e != null) {
-//                            log.info("Exception from wareHouseTask is: {}", e.getMessage());
-//                        }
-//                        return r;
-//                    });
-//
-//            CompletableFuture<OrderDto> orderTask = CompletableFuture.supplyAsync(
-//                    () -> orderId, executorService).thenCombineAsync(
-//                    warehouseTask, (order, wareHouseResponse) -> {
-//                        if (wareHouseResponse == null || wareHouseResponse.getId() == null) {
-//                            throw new RuntimeException("Warehouse is null");
-//                        }
-//                        order.setWarehouseId(wareHouseResponse.getId());
-//                        order.setIsExists(wareHouseResponse.getIsExists());
-//                        return order;
-//                    }, executorService
-//            ).handle((order, exception) -> {
-//                if (exception != null) {
-//                    log.info("Exception from orderTask is: {}", exception.getMessage());
-//                    throw new RuntimeException(exception.getMessage(), exception.getCause());
-//                }
-//                return order;
-//            });
-//            return orderTask.get(60, TimeUnit.SECONDS);
-//        }finally {
-//            if (!executorService.awaitTermination(60,TimeUnit.SECONDS)){
-//                executorService.shutdownNow();
-//            }
-//        }
 
 
 
