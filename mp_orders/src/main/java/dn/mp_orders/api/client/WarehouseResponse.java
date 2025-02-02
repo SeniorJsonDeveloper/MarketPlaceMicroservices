@@ -7,7 +7,6 @@ import lombok.*;
 @Data
 public class WarehouseResponse  {
 
-
     private String id;
 
     private String developerName;

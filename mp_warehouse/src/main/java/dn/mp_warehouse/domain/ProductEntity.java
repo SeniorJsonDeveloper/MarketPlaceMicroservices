@@ -34,7 +34,8 @@ public class ProductEntity {
 
     private String country;
 
-    private Long count;
+    @Column(name = "count")
+    private Long countOfProducts;
 
     @Column(unique = true)
     private String buyerId;
@@ -42,8 +43,8 @@ public class ProductEntity {
     @Column(unique = true)
     private String sellerId;
 
-//    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-//    private WareHouseEntity warehouse;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    private WareHouseEntity warehouse;
 
 
 }

@@ -49,7 +49,7 @@ public class OrderDto {
 
     private List<CommentEntity> comments;
 
-    private Long countOfItems;
+    private Long countOfProducts;
 
     @Override
     public String toString() {

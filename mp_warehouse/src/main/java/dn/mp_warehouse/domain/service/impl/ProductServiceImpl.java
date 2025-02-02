@@ -105,6 +105,6 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Long getCount(String id) {
         ProductEntity product = productMapper.toEntity(findById(id));
-        return product.getCount();
+        return product.getCountOfProducts();
     }
 }

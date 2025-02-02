@@ -21,8 +21,8 @@ public class WareHouseEntity implements Serializable {
 
     private String name;
 
-//    @OneToMany(mappedBy = "warehouse")
-//    private List<ProductEntity> products = new ArrayList<>();
+    @OneToMany(mappedBy = "warehouse")
+    private List<ProductEntity> products = new ArrayList<>();
 
 
     private String developerName;

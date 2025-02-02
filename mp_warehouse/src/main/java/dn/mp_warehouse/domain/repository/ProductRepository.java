@@ -14,8 +14,8 @@ public interface ProductRepository extends JpaRepository<ProductEntity, String>,
 
     Optional<ProductEntity> findByProductName(String name);
 
-    @Query("SELECT SUM(p.count) FROM ProductEntity p WHERE p.sellerId = :warehouseId")
-    Long findTotalProductCountByWarehouseId(String warehouseId);
+//    @Query("SELECT SUM(p.count) FROM ProductEntity p WHERE p.sellerId = :warehouseId")
+//    Long findTotalProductCountByWarehouseId(String warehouseId);
 
 
 

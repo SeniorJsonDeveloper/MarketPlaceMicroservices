@@ -1,5 +1,6 @@
 package dn.mp_warehouse.domain.service;
 
+import dn.mp_warehouse.api.dto.WarehouseDto;
 import dn.mp_warehouse.domain.WareHouseEntity;
 
 public interface WarehouseService {
@@ -8,7 +9,7 @@ public interface WarehouseService {
 
     WareHouseEntity getById(String id);
 
-    WareHouseEntity getWarehouseByName(String warehouseName);
+    WarehouseDto getWarehouseByName(String warehouseName);
 
     //TODO:
 }

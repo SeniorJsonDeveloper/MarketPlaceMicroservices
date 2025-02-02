@@ -123,6 +123,7 @@ public class OrderServiceImpl implements OrderService {
                 warehouseTask,(o,warehouseResponse)->{
                  o.setWarehouseId(warehouseResponse.getId());
                  o.setIsExists(warehouseResponse.getIsExists());
+                 o.setCountOfProducts(warehouseResponse.getCountOfProducts());
                  return o;
                 }).exceptionally(
                         ex->{
