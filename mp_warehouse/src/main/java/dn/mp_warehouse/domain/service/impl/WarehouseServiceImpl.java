@@ -65,31 +65,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             }
         }
     }
-//        var warehouse = wareHouseRepository.findByDeveloperName(developerName);
-//
-//        if (warehouse.isPresent()) {
-//            WareHouseEntity wareHouseEntity = warehouse.get();
-//            var countOfProducts = warehouse.get().getProducts()
-//                    .stream()
-//                    .mapToLong(ProductEntity::getCountOfProducts)
-//                    .sum();
-//
-//            wareHouseEntity.setId(warehouse.get().getId());
-//            wareHouseEntity.setName(warehouse.get().getName());
-//            wareHouseEntity.setIsExists(true);
-//            wareHouseEntity.setCountOfProducts(countOfProducts);
-//            log.info("WarehouseInfo is: {},{},{},{}", warehouse.get().getId(),
-//                    warehouse.get().getName(), warehouse.get().getIsExists(),
-//                    warehouse.get().getCountOfProducts());
-//            return wareHouseEntity;
-//        }
-//
-//        else {
-//            return WareHouseEntity
-//                    .builder()
-//                    .isExists(false)
-//                    .build();
-//        }
+
 
 
 

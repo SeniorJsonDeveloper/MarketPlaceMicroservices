@@ -77,10 +77,6 @@ public class ProductServiceImpl implements ProductService {
                     o.setCost(productInputDto.getCost());
                     o.setBuyerId(productInputDto.getBuyerId());
                     o.setSellerId(productInputDto.getSellerId());
-                    Map<String,ProductEntity> map = new HashMap<>();
-//                    var wareHouseId = wareHouseRepository.findById(o.getWarehouse().getId())
-//                                    .orElseThrow(()->new ResourceNotFoundException(""));
-//                    map.put(wareHouseId.getId(),o);
                     productRepository.save(o);
                     kafkaTemplate.send((Message<?>) o);
                 },()-> {
