@@ -43,7 +43,7 @@ public class WarehouseServiceImpl implements WarehouseService {
             wareHouseEntity.setId(warehouse.get().getId());
             wareHouseEntity.setName(warehouse.get().getName());
             wareHouseEntity.setIsExists(true);
-            wareHouseEntity.setCountOfProducts(productCountOnWarehouse);
+            wareHouseEntity.setCountOfProducts(warehouse.get().getCountOfProducts());
             log.info("WarehouseInfo is: {},{},{},{}",warehouse.get().getId(),
                     warehouse.get().getName(),warehouse.get().getIsExists(),
                     warehouse.get().getCountOfProducts());

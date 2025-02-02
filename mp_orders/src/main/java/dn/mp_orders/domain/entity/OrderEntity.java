@@ -1,5 +1,6 @@
 package dn.mp_orders.domain.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "orders_table",schema = "orders")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderEntity implements Serializable {
 
     @Id
@@ -51,6 +53,8 @@ public class OrderEntity implements Serializable {
 
     @JsonIgnore
     private Boolean isActive;
+
+    private Boolean isExists;
 
     @Transient
     @Enumerated(EnumType.STRING)
