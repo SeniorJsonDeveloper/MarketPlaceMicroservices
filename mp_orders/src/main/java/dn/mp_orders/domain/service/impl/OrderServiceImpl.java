@@ -34,7 +34,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheManager = "redisCacheManager")
+@CacheConfig(cacheManager = "cacheManager")
 public class OrderServiceImpl implements OrderService {
 
     private static final String DELIVERED = "ДОСТАВЛЕН";
@@ -109,6 +109,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    @Cacheable(value = "orderById",key = "#id")
     public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException,
                                                                                InterruptedException,
                                                                                  TimeoutException {
@@ -137,6 +138,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
+    @Cacheable(value = "orderById",key = "#id")
     public OrderDto findOrderById(String id) {
         return orderMapper.toDto(orderRepository.findById(id)
                 .orElseThrow(()-> new OrderNotFound("Order not found")));

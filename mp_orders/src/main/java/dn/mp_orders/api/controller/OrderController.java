@@ -30,8 +30,6 @@ public class OrderController {
 
     private final CommentService commentService;
 
-    private final WarehouseClient warehouseClient;
-
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)

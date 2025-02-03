@@ -14,8 +14,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ErrorBody> catchProductNotFoundException(HttpStatus httpStatus,
                                                            WebRequest request,
-                                                           ProductNotFoundException e){
-        return handleException(httpStatus,request,e);
+                                                           ProductNotFoundException exception){
+        return handleException(httpStatus,request,exception);
+    }
+
+    @ExceptionHandler(WarehouseNotFoundException.class)
+    public ResponseEntity<ErrorBody> catchProductNotFoundException(HttpStatus httpStatus,
+                                                                   WebRequest request,
+                                                                   WarehouseNotFoundException exception){
+        return handleException(httpStatus,request,exception);
     }
 
     private ResponseEntity<ErrorBody> handleException(HttpStatusCode httpStatusCode, WebRequest request,Exception e) {

@@ -36,16 +36,24 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
-cache:
+app:
   redis:
     host: localhost
     port: 6379
-  cacheNames:
-    orderAfterCreate: orderAfterCreate
-    orderById: orderById
-    orderList: orders
-    comment: comment
-    orderListWithPagination: ordersWithPagination
+  cache:
+    cacheType: redis
+    caches:
+      orderAfterCreate:
+        expiry: 5m
+      orderById:
+        expiry: 10m
+      orders:
+        expiry: 10m
+      comment:
+        expiry: 14d
+      ordersWithPagination:
+        expiry: 20m
+
 
 
 

@@ -3,24 +3,22 @@ package dn.mp_notifications.domain.service.impl;
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.type.PhoneNumber;
+import dn.mp_notifications.api.dto.EmailDto;
 import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.api.exception.NotFoundException;
 import dn.mp_notifications.api.dto.mapper.CustomNotificationMapper;
+import dn.mp_notifications.domain.configuration.EmailConfig;
 import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.api.dto.NotificationDto;
 import dn.mp_notifications.domain.repository.NotificationRepository;
-import dn.mp_notifications.domain.service.NotificationScheduler;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForCalendar;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -47,13 +45,13 @@ public class NotificationServiceImpl implements SenderService{
     private static final String PROCESSING = "В ОБРАБОТКЕ";
 
 
-
-
     private final NotificationRepository notificationRepository;
 
     private final CustomNotificationMapper customNotificationMapper;
 
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private final EmailConfig emailConfig;
 
 
 
@@ -123,6 +121,10 @@ public class NotificationServiceImpl implements SenderService{
         message.setStatus(messageDto.getStatus());
         message.setPrice(BigDecimal.ZERO);
         message.setRating(messageDto.getRating());
+        EmailDto emailDto = new EmailDto();
+        emailDto.setPhoneNumber(message.getName());
+        emailDto.setSenderId(message.getName());
+        emailDto.setMessage(message.getMessage());
         log.info("Sending notification: {}", message.getMessage());
 
         Notification notification = new Notification();
@@ -134,9 +136,10 @@ public class NotificationServiceImpl implements SenderService{
         notification.setOrderId(orderId);
         notificationRepository.save(notification);
         
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
                 executorService.execute(() -> {
                 getNotificationsCount();
+                emailConfig.sendEmail(emailDto);
                 executorService.shutdown();
                 log.info("Notification sent successfully: {}", notification);
             });

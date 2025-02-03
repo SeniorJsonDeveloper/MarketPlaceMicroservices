@@ -1,8 +1,5 @@
 package dn.mp_warehouse.api.dto;
-
-
 import lombok.*;
-
 import java.math.BigDecimal;
 
 @Getter
@@ -10,6 +7,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductFilterDto {
+
 
     private String country;
 

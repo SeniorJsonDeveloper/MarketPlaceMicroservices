@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(name = "OrderDto",description = "ДТО заказа")
-public class OrderDto {
+public class OrderDto implements Serializable {
 
     private String id;
 
