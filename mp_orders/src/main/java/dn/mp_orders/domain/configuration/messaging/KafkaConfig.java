@@ -1,5 +1,4 @@
 package dn.mp_orders.domain.configuration.messaging;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -14,7 +13,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +24,7 @@ public class KafkaConfig {
 
 
     @Bean
-    public DefaultKafkaProducerFactory<String, String> producerFactory(ObjectMapper objectMapper) {
+    public DefaultKafkaProducerFactory<String,Object> producerFactory(ObjectMapper objectMapper) {
         Map<String, Object> producerProperties = new HashMap<>();
         producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -35,7 +33,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, String> kafkafkaTemplate(DefaultKafkaProducerFactory<String, String> stringProducerFactory) {
+    public KafkaTemplate<String, Object> kafkafkaTemplate(DefaultKafkaProducerFactory<String, Object> stringProducerFactory) {
         return new KafkaTemplate<>(stringProducerFactory);
     }
 
@@ -50,10 +48,12 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String,String> listenerFactory(ConsumerFactory<String, String> stringConsumerFactory) {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String,Object> listenerFactory(ConsumerFactory<String, Object> stringConsumerFactory) {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(stringConsumerFactory);
         factory.setBatchListener(false);
         return factory;
     }
+
+
 }

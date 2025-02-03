@@ -1,4 +1,4 @@
-package dn.mp_warehouse.domain;
+package dn.mp_warehouse.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 

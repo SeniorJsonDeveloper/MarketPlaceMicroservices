@@ -1,8 +1,7 @@
-package dn.mp_warehouse.domain;
+package dn.mp_warehouse.domain.entity;
 
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -44,7 +43,14 @@ public class ProductEntity {
     private String sellerId;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "warehouse_id")
     private WareHouseEntity warehouse;
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    @JoinColumn(name = "delivery_id")
+    private DeliveryEntity delivery;
+
+
 
 
 }

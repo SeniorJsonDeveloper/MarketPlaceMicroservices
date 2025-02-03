@@ -5,7 +5,7 @@ import dn.mp_warehouse.api.dto.ProductInputDto;
 import dn.mp_warehouse.api.dto.ProductOutDto;
 import dn.mp_warehouse.api.dto.mapper.ProductMapper;
 import dn.mp_warehouse.api.exception.ProductNotFoundException;
-import dn.mp_warehouse.domain.ProductEntity;
+import dn.mp_warehouse.domain.entity.ProductEntity;
 import dn.mp_warehouse.domain.repository.ProductRepository;
 import dn.mp_warehouse.domain.repository.specification.ProductSpecification;
 import dn.mp_warehouse.domain.service.ProductService;
@@ -17,9 +17,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

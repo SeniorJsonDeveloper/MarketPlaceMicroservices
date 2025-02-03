@@ -1,7 +1,6 @@
 package dn.mp_warehouse.domain.service;
 
 import dn.mp_warehouse.api.dto.WarehouseDto;
-import dn.mp_warehouse.domain.WareHouseEntity;
 
 public interface WarehouseService {
 
