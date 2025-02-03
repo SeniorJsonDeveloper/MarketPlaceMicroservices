@@ -2,7 +2,7 @@
 package dn.mp_orders.domain.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import dn.mp_orders.api.client.WarehouseClient;
+import dn.mp_orders.api.client.WarehouseHttpClient;
 import dn.mp_orders.api.dto.KafkaRecord;
 import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
@@ -13,7 +13,6 @@ import dn.mp_orders.domain.exception.OrderNotFound;
 import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
@@ -24,7 +23,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.concurrent.*;
@@ -61,7 +59,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final Gson gson;
 
-    private final WarehouseClient warehouseClient;
+    private final WarehouseHttpClient warehouseHttpClient;
 
 
     @Override
@@ -118,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
                 ()->findOrderById(id)
         );
         CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
-                ()->warehouseClient.getWarehouseId(warehouseName)
+                ()-> warehouseHttpClient.getWarehouseId(warehouseName)
         );
         return orderTask.thenCombine(
                 warehouseTask,(o,warehouseResponse)->{

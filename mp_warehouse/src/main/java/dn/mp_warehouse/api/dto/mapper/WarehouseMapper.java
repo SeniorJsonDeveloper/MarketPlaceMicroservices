@@ -1,7 +1,7 @@
 package dn.mp_warehouse.api.dto.mapper;
 
 import dn.mp_warehouse.api.dto.WarehouseDto;
-import dn.mp_warehouse.domain.WareHouseEntity;
+import dn.mp_warehouse.domain.entity.WareHouseEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring",unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)

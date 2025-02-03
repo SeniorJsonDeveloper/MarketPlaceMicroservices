@@ -8,13 +8,12 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.http.HttpRequest;
 import java.util.Objects;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class WarehouseClient {
+public class WarehouseHttpClient {
 
     @Value("${web.integration.warehouseUrl}")
     private String warehouseUrl;

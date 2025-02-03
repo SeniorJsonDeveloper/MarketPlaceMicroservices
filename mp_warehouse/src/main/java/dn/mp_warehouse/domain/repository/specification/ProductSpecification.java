@@ -1,7 +1,7 @@
 package dn.mp_warehouse.domain.repository.specification;
 
 import dn.mp_warehouse.api.dto.ProductFilterDto;
-import dn.mp_warehouse.domain.ProductEntity;
+import dn.mp_warehouse.domain.entity.ProductEntity;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
