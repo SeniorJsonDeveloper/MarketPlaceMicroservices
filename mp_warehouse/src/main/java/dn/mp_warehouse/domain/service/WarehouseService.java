@@ -7,7 +7,7 @@ public interface WarehouseService {
 
     void registerWarehouse();
 
-    WareHouseEntity getById(String id);
+    WarehouseDto getById(String id);
 
     WarehouseDto getWarehouseByName(String warehouseName);
 

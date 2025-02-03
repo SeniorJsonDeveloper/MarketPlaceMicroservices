@@ -34,6 +34,7 @@ public class WarehouseClient {
                 .toEntity(WarehouseResponse.class)
                 .getBody();
         log.info(Objects.requireNonNull(warehouseResponse).toString());
+
         if(warehouseResponse.getId() == null) {
             throw new OrderNotFound("Заказ не найден на складе");
         }

@@ -1,5 +1,6 @@
 package dn.mp_notifications.domain.configuration;
 import com.google.gson.JsonParser;
+import dn.mp_notifications.api.dto.EmailDto;
 import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class KafkaListenerConfig {
 
     private final SenderService senderService;
 
-    private final RestClient restClient;
+    private final EmailConfig emailConfig;
 
 
     @SneakyThrows
@@ -29,12 +30,10 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("message")
                     .getAsString();
-
             String name = JsonParser.parseString(payload)
                     .getAsJsonObject()
                     .get("name")
                     .getAsString();
-
             String status = JsonParser.parseString(payload)
                     .getAsJsonObject()
                     .get("status")
@@ -43,13 +42,22 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("id")
                     .getAsString();
-
             MessageDto dto = new MessageDto();
             dto.setId(id);
             dto.setMessage(message);
             dto.setName(name);
             dto.setStatus(status);
             senderService.sendNotification(dto,dto.getId());
+            EmailDto emailDto = new EmailDto();
+            emailDto.setPhoneNumber(dto.getName());
+            emailDto.setSenderId(dto.getName());
+            emailDto.setMessage(dto.getMessage());
+
+            try {
+                emailConfig.sendEmail(emailDto);//TODO:
+            }catch (Exception e){
+                log.error("Не удалось отправить письмо по причине: {}", e.getMessage());
+            }
 
             log.info("Received message: {}, " +
                      "Received name: {}, " +

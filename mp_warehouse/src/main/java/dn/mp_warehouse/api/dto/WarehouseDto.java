@@ -1,14 +1,8 @@
 package dn.mp_warehouse.api.dto;
-
-
-import dn.mp_warehouse.domain.ProductEntity;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,9 +15,11 @@ public class WarehouseDto {
 
     private String name;
 
-    private List<ProductEntity> products;
+    private List<ProductOutDto> products;
 
     private String developerName;
+
+    private List<?> userIds;
 
     private Boolean isExists;
 

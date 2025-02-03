@@ -1,18 +1,15 @@
 package dn.mp_warehouse.domain.service.impl;
-
-
 import dn.mp_warehouse.api.dto.WarehouseDto;
+import dn.mp_warehouse.api.dto.mapper.WarehouseMapper;
+import dn.mp_warehouse.api.exception.WarehouseNotFoundException;
 import dn.mp_warehouse.domain.ProductEntity;
 import dn.mp_warehouse.domain.WareHouseEntity;
-import dn.mp_warehouse.domain.repository.ProductRepository;
 import dn.mp_warehouse.domain.repository.WareHouseRepository;
 import dn.mp_warehouse.domain.service.WarehouseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,6 +18,8 @@ public class WarehouseServiceImpl implements WarehouseService {
 
     private final WareHouseRepository wareHouseRepository;
 
+    private final WarehouseMapper warehouseMapper;
+
 
     @Override
     public void registerWarehouse() {
@@ -28,8 +27,9 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WareHouseEntity getById(String id) {
-        return null;
+    public WarehouseDto getById(String id) {
+        return warehouseMapper.toDto(wareHouseRepository.findById(id)
+                .orElseThrow(()->new WarehouseNotFoundException("Склад не найден")));
     }
 
     @Override
