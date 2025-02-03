@@ -37,12 +37,10 @@ public class CommentEntity implements Serializable {
     @JsonIgnore
     private String userId;
 
-    @Size(min = 1,max = 255,message = "Text cant be empty")
-    @Positive(message = "Text cant be negative")
+
     private String text;
 
-    @Min(value = 1,message = "Rating cant be <1")
-    @Max(value = 5,message = "Rating cant be >5")
+
     private int rating;
 
 
