@@ -18,38 +18,49 @@ import java.util.List;
 @Schema(name = "OrderDto",description = "ДТО заказа")
 public class OrderDto implements Serializable {
 
+    @Schema(name = "id",description = "Входящий идентификатор заказа")
     private String id;
 
     @NotBlank
+    @Schema(name = "name",description = "Название заказа")
     private String name;
 
     @Size(max = 255)
+    @Schema(name = "message",description = "Сообщение , которое передается в брокер сообщений")
     private String message;
 
 
     @NotBlank
+    @Schema(name = "status",description = "Статус заказа")
     private String status;
 
 //    @NotBlank
 //    @DecimalMin(value = "0.01", message = "Price must be at least 0.01")
 //    @DecimalMax(value = "10000.00", message = "Price must not be greater than 10000.00")
 //    @Digits(integer = 5, fraction = 2, message = "Price must have up to 5 integer digits and 2 decimal places")
+    @Schema(name = "price",description = "Цена заказа")
     private BigDecimal price;
 
 //    @PositiveOrZero
+    @Schema(name = "rating",description = "Рейтинг заказа")
     private Double rating;
 
 //    @NotNull
+    @Schema(name = "userId",description = "Уникальный идентификатор пользователя, совершившего заказ")
     private String userId;
 
 //    @NotNull
+    @Schema(name = "warehouseId",description = "Уникальный идентификатор склада, которому принадлежал товар")
     private String warehouseId;
 
+    @Schema(name = "isExists",description = "Информация о наличии товара на складе")
     private Boolean isExists;
 
+    @Schema(name = "comments",description = "Комментарии к заказу")
     private List<CommentEntity> comments;
 
-    private Long countOfProducts;
+    @Schema(name = "countOfProducts",description = "Количество товаров в заказе")
+    private Long count;
 
     @Override
     public String toString() {

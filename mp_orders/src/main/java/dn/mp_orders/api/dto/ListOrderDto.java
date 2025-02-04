@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Schema(name = "ListOrderDto",description = "Список заказов")
 public class ListOrderDto {
 
+    @Schema(name = "orderDtoList",description = "Список заказов")
     private Page<OrderDto> orderDtoList;
 
 
