@@ -1,10 +1,6 @@
 package dn.mp_orders.domain.service.impl;
 
-
-import dn.mp_orders.api.mapper.OrderMapper;
-import dn.mp_orders.domain.entity.CommentEntity;
 import dn.mp_orders.domain.entity.OrderEntity;
-import dn.mp_orders.domain.repository.CommentRepository;
 import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.OrderSchedulerService;
 import dn.mp_orders.domain.service.OrderService;
@@ -21,12 +17,9 @@ import java.util.List;
 @Slf4j
 public class OrderSchedulerServiceImpl implements OrderSchedulerService {
 
-
-    private final OrderMapper orderMapper;
+    private final OrderService orderService;
 
     private final OrderRepository orderRepository;
-
-    private final CommentRepository commentRepository;
 
     private final ApplicationContext applicationContext;
 
@@ -49,19 +42,24 @@ public class OrderSchedulerServiceImpl implements OrderSchedulerService {
     }
 
     @Override
-    @Scheduled(fixedRate = 5000)
     public void getAvgRatingByComments() {
-        try {
-            var ratingByComments = commentRepository.findAll()
-                    .stream()
-                    .mapToDouble(CommentEntity::getRating)
-                    .average()
-                    .orElse(0.0);
-
-            log.info("Average Rating: {}",ratingByComments);
-        } catch (Exception e) {
-            log.error("Failed to calculate average rating: {}", e.getMessage(), e);
-        }
 
     }
+
+//    @Override
+//    @Scheduled(fixedRate = 5000)
+//    public void getAvgRatingByComments() {
+//        try {
+//
+//           var ratingByComments =  orderService.getTotalRating(orderRepository.findAll());
+//           if (ratingByComments == null || ratingByComments.isNaN()) {
+//               ratingByComments = 0.0;
+//           }
+//
+//           log.info("Average Rating: {}",ratingByComments);
+//        } catch (Exception e) {
+//            log.error("Failed to calculate average rating: {}", e.getMessage(), e);
+//        }
+//
+//    }
 }

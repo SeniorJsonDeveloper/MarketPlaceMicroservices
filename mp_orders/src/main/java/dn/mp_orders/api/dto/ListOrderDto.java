@@ -18,7 +18,6 @@ public class ListOrderDto {
     @Schema(name = "orderDtoList",description = "Список заказов")
     private Page<OrderDto> orderDtoList;
 
-
     public ListOrderDto(List<OrderDto> list, int totalElements) {
         this.orderDtoList = new PageImpl<>(new ArrayList<>(list));
 

@@ -1,4 +1,4 @@
-package dn.mp_orders.domain.exception;
+package dn.mp_orders.api.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

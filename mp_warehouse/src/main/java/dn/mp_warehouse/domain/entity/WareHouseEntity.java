@@ -29,6 +29,9 @@ public class WareHouseEntity implements Serializable {
 
     private Long countOfProducts;
 
+    @ManyToMany(mappedBy = "warehouses",fetch = FetchType.LAZY)
+    private List<ShopEntity> shops;
+
 
 
 }

@@ -35,7 +35,7 @@ public class NotificationController {
         return service.findNotificationById(id);
     }
 
-    @GetMapping
+    @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Получение списка уведомлений",responseCode = "200")
     public List<Notification> getNotificationList() {

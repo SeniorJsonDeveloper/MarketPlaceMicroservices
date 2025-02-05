@@ -3,16 +3,8 @@ server:
 spring:
   config:
     import: optional:file:.env[.properties]
-  elasticsearch:
-    uris: http://localhost:9200
-  rabbitmq:
-    username: guest
-    password: guest
-    host: localhost
-    port: 5672
-    listener:
-      direct:
-        acknowledge-mode: manual
+
+
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/postgres
@@ -22,6 +14,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    open-in-view: true
 
 
 
@@ -33,6 +26,8 @@ spring:
     topic:
       name: OrderToNotifications
       second_name: OrderToWarehouse
+      third_name: OrderToDelivery
+
   main:
     allow-bean-definition-overriding: true
 
@@ -75,9 +70,5 @@ resilience4j.ratelimiter:
       limitForPeriod: 6
       limitRefreshPeriod: 500ms
       timeoutDuration: 3s
-rabbit:
-  queue:
-    name: WarehouseToOrders
-
 
 

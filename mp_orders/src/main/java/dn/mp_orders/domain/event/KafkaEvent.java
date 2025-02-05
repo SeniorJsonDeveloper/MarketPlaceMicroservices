@@ -1,10 +1,11 @@
-package dn.mp_orders.api.dto;
+package dn.mp_orders.domain.event;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class KafkaRecord {
+@Schema(name = "KafkaEvent",description = "Событие, отправляющееся в кафку")
+public class KafkaEvent {
 
     @Schema(name = "id",description = "Уникальный идентификатор сообщения в брокере сообщений")
     private String id;

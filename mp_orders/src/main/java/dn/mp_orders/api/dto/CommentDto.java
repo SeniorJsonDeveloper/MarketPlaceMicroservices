@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "CommentDto",description = "Входящий комментарий для заказа")
+@Schema(name = "Comment",description = "Входящий комментарий для заказа")
 public class CommentDto {
 
     @JsonIgnore

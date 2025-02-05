@@ -9,25 +9,19 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
 import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.Objects;
 
 @Configuration
 public class WebConfig {
-
-    @Value("${web.integration.warehouseUrl}")
-    private String warehouseUrl;
-
-    @Value("${web.integration.paymentsUrl}")
-    private String paymentsUrl;
-
-    @Value("${web.integration.pricesUrl}")
-    private String pricesUrl;
 
 
     @Bean
     public RestClient restClient(){
         return RestClient.builder().build();
     }
+
+
 
 
 }
