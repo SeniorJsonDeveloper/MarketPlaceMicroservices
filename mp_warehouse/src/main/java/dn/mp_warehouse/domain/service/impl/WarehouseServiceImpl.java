@@ -52,12 +52,12 @@ public class WarehouseServiceImpl implements WarehouseService {
                 warehouseDto.setId(originalEntity.getId());
                 warehouseDto.setName(developerName);
                 warehouseDto.setIsExists(true);
-                warehouseDto.setCountOfProducts(countOfProducts);
+                warehouseDto.setCount(countOfProducts);
 
 
                 log.info("WarehouseInfo is: {}, {}, {}, {}", warehouseDto.getId(),
                         warehouseDto.getName(), warehouseDto.getIsExists(),
-                        warehouseDto.getCountOfProducts());
+                        warehouseDto. getCount());
 
                 return warehouseDto;
             } else {

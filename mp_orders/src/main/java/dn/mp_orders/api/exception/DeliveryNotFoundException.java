@@ -1,12 +1,11 @@
-package dn.mp_orders.domain.exception;
+package dn.mp_orders.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class CommentNotFoundException extends RuntimeException {
-
-    public CommentNotFoundException(String message) {
+public class DeliveryNotFoundException extends RuntimeException {
+    public DeliveryNotFoundException(String message) {
         super(message);
     }
 }

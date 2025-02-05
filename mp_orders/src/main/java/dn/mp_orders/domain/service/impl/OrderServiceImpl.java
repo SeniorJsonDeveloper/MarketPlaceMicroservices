@@ -3,13 +3,14 @@ package dn.mp_orders.domain.service.impl;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dn.mp_orders.api.client.WarehouseHttpClient;
-import dn.mp_orders.api.dto.KafkaRecord;
+import dn.mp_orders.domain.event.KafkaEvent;
 import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.api.client.WarehouseResponse;
 import dn.mp_orders.api.mapper.OrderMapper;
 import dn.mp_orders.domain.entity.OrderEntity;
-import dn.mp_orders.domain.exception.OrderNotFound;
+import dn.mp_orders.api.exception.OrderNotFound;
+import dn.mp_orders.domain.event.OrderSavedEvent;
 import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,14 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -51,11 +55,17 @@ public class OrderServiceImpl implements OrderService {
     @Value("${spring.kafka.topic.second_name}")
     private String OTWTopicName;
 
+    @Value("${spring.kafka.topic.third_name}")
+    private String OTDTopicName;
+
     private final OrderRepository orderRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     private final OrderMapper orderMapper;
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
 
     private final Gson gson;
 
@@ -70,7 +80,6 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Page<OrderEntity> orders = orderRepository.findAll(pageable);
-
 
         if (orders.getContent().isEmpty()) {
             throw new IllegalArgumentException("No orders found");
@@ -122,7 +131,6 @@ public class OrderServiceImpl implements OrderService {
                 warehouseTask,(o,warehouseResponse)->{
                  o.setWarehouseId(warehouseResponse.getId());
                  o.setIsExists(warehouseResponse.getIsExists());
-                 o.setCountOfProducts(warehouseResponse.getCountOfProducts());
                  return o;
                 }).exceptionally(
                         ex->{
@@ -133,8 +141,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-
     @Override
     @Cacheable(value = "orderById",key = "#id")
     public OrderDto findOrderById(String id) {
@@ -143,11 +149,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+    @Transactional
     public void sendMessage(final OrderDto orderDto) {
         JsonObject jsonObject = getJsonObject(orderDto);
         String result = gson.toJson(jsonObject);
         log.info("Kafka message: {}", result);
-        CompletableFuture.supplyAsync(() -> kafkaTemplate.send(OTNTopicName, result))
+        CompletableFuture.supplyAsync(
+                () -> kafkaTemplate.send(OTNTopicName, result))
                 .thenCompose(message -> message.whenComplete((r, e) -> {
                     if (e == null) {
                         log.info("Sent message to warehouse successful: {}", r);
@@ -156,7 +164,7 @@ public class OrderServiceImpl implements OrderService {
                         log.error("Failed to send to Kafka. Reason: {}", e.getMessage(), e);
                     }
                 }))
-                .thenCompose(r -> kafkaTemplate.send(OTWTopicName, result))
+//                .thenCompose(r -> kafkaTemplate.send(OTWTopicName, result))
                 .whenComplete((r, e) -> {
                     if (e == null) {
                         log.info("Sent second message successfully.");
@@ -171,30 +179,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-
-
-
-
-
-
-    private static JsonObject getJsonObject(OrderDto orderDto) {
-        KafkaRecord kafkaRecord = new KafkaRecord();
-        kafkaRecord.setMessage(orderDto.getMessage());
-        kafkaRecord.setName(orderDto.getName());
-        kafkaRecord.setStatus(orderDto.getStatus());
+    private static JsonObject getJsonObject(final OrderDto orderDto) {
+        KafkaEvent kafkaEvent = new KafkaEvent();
+        kafkaEvent.setMessage(orderDto.getMessage());
+        kafkaEvent.setName(orderDto.getName());
+        kafkaEvent.setStatus(orderDto.getStatus());
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("id", orderDto.getId());
-        jsonObject.addProperty("message", kafkaRecord.getMessage());
-        jsonObject.addProperty("name", kafkaRecord.getName());
-        jsonObject.addProperty("status", kafkaRecord.getStatus());
+        jsonObject.addProperty("message", kafkaEvent.getMessage());
+        jsonObject.addProperty("name", kafkaEvent.getName());
+        jsonObject.addProperty("status", kafkaEvent.getStatus());
         return jsonObject;
     }
 
     @Override
     @CachePut(value = "orderAfterCreate", key = "#result.id")
     @CacheEvict(value = {"orders", "orderById"}, allEntries = true)
+    @Transactional
     public OrderDto create(final OrderDto orderDto) {
         OrderEntity order;
         if (orderDto.getId() != null && orderRepository.existsById(orderDto.getId())) {
@@ -211,13 +213,20 @@ public class OrderServiceImpl implements OrderService {
 
         orderRepository.save(order);
 
+        eventPublisher.publishEvent(
+                new OrderSavedEvent(
+                        order.getId(),
+                        order.getStatus(),
+                        order.getIsExists()
+                ));
+
         var dto = orderMapper.toDto(order);
         log.info("Saved order: {}", dto);
-        try {
-            sendMessage(dto);
-        } catch (Exception e) {
-            log.error("Failed to send message to Kafka: {}", dto.getId());
-        }
+//        try {
+//            sendMessage(dto);
+//        } catch (Exception e) {
+//            log.error("Failed to send message to Kafka: {}", dto.getId());
+//        }
         return dto;
     }
 
@@ -255,6 +264,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @CacheEvict(value = {"orders", "orderById"}, key = "#id",beforeInvocation = false)
+    @Transactional
     public void updateOrderStatus(final String id,
                                   final OrderDto order) {
 
@@ -264,7 +274,13 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.findById(id).ifPresentOrElse(o->{
                     o.setStatus(order.getStatus());
                     orderRepository.save(o);
-                    sendMessage(orderMapper.toDto(o));
+                    eventPublisher.publishEvent(
+                            new OrderSavedEvent(
+                                    o.getId(),
+                                    o.getStatus(),
+                                    o.getIsExists()
+                            )
+                    );
                     log.info("UPDATED STATUS: {}", order.getStatus());
                 }, ()-> {
                     throw new OrderNotFound("Order not found");

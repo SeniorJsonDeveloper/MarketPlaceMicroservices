@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -27,7 +29,6 @@ public class OrderEntity implements Serializable {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Transient
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
@@ -56,9 +57,12 @@ public class OrderEntity implements Serializable {
 
     private Boolean isExists;
 
-    @Transient
-    @Enumerated(EnumType.STRING)
-    private Set<String> commentIds;
+    @OneToMany(mappedBy = "order")
+    private List<CommentEntity> commentIds;
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "delivery_id")
+    private DeliveryEntity delivery;
 
     @Override
     public String toString() {
@@ -76,4 +80,15 @@ public class OrderEntity implements Serializable {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderEntity order = (OrderEntity) o;
+        return Objects.equals(getId(), order.getId()) && Objects.equals(getName(), order.getName()) && Objects.equals(getCreatedAt(), order.getCreatedAt()) && Objects.equals(getStatus(), order.getStatus()) && Objects.equals(getRating(), order.getRating()) && Objects.equals(getMessage(), order.getMessage()) && Objects.equals(getPrice(), order.getPrice()) && Objects.equals(getUserId(), order.getUserId()) && Objects.equals(getItemId(), order.getItemId()) && Objects.equals(getWarehouseId(), order.getWarehouseId()) && Objects.equals(getUserNumber(), order.getUserNumber()) && Objects.equals(getIsActive(), order.getIsActive()) && Objects.equals(getIsExists(), order.getIsExists()) && Objects.equals(getCommentIds(), order.getCommentIds());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getCreatedAt(), getStatus(), getRating(), getMessage(), getPrice(), getUserId(), getItemId(), getWarehouseId(), getUserNumber(), getIsActive(), getIsExists(), getCommentIds());
+    }
 }

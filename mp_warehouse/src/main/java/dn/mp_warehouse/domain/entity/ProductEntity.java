@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class ProductEntity {
 
     @Id
@@ -47,8 +46,8 @@ public class ProductEntity {
     private WareHouseEntity warehouse;
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-    @JoinColumn(name = "delivery_id")
-    private DeliveryEntity delivery;
+    @JoinColumn(name = "shop_id")
+    private ShopEntity shop;
 
 
 

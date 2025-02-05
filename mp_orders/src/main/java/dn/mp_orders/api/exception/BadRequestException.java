@@ -1,4 +1,4 @@
-package dn.mp_orders.domain.exception;
+package dn.mp_orders.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

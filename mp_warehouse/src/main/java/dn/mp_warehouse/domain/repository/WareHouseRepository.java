@@ -14,8 +14,7 @@ public interface WareHouseRepository extends JpaRepository<WareHouseEntity, Stri
 
     Optional<WareHouseEntity> findByDeveloperName(String developerName);
 
-//    @Query("SELECT SUM(p.count) FROM ProductEntity p WHERE p.warehouse.id = :warehouseId")
-//    Long findTotalProductCountByWarehouse(@Param("warehouseId") String warehouseId);
+
 
 
 }

@@ -10,5 +10,7 @@ import java.util.Set;
 public interface CommentRepository  extends JpaRepository<CommentEntity,String> {
 
 
-    List<CommentEntity> findAllByOrderId(String orderId);
+//    List<CommentEntity> findAllByOrderId(String orderId);
+
+//    List<CommentEntity> findAllById(List<CommentEntity> commentIds);
 }

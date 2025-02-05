@@ -33,7 +33,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     compileOnly("org.projectlombok:lombok")
     implementation("org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j")
     implementation("org.springframework.kafka:spring-kafka")
@@ -42,9 +41,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-logging
     implementation("org.springframework.boot:spring-boot-starter-logging:3.3.6")
     // https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit
-    implementation("org.springframework.amqp:spring-rabbit:3.2.1")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-amqp
-    implementation("org.springframework.boot:spring-boot-starter-amqp:3.4.0")
     // https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
     implementation("io.swagger.core.v3:swagger-annotations:2.2.25")
 

@@ -1,4 +1,4 @@
-package dn.mp_orders.domain.exception;
+package dn.mp_orders.api.exception;
 
 import jakarta.validation.UnexpectedTypeException;
 import org.springframework.http.HttpStatus;

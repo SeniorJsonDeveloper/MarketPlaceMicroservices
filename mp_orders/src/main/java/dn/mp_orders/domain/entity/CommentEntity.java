@@ -21,7 +21,6 @@ import static jakarta.persistence.FetchType.LAZY;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "comments")
 @Entity
 @Table(name = "comments_table",schema = "orders")
 public class CommentEntity implements Serializable {
@@ -32,16 +31,15 @@ public class CommentEntity implements Serializable {
     private String id;
 
     @JsonIgnore
-    private String orderId;
-
-    @JsonIgnore
     private String userId;
-
 
     private String text;
 
-
     private int rating;
+
+    @ManyToOne(cascade = CascadeType.ALL,fetch = LAZY)
+    @JoinColumn(name = "order_id",insertable = false,updatable = false)
+    private OrderEntity order;
 
 
 }

@@ -18,24 +18,38 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 @RestController
-@RequestMapping("/api/v1/order")
 @RequiredArgsConstructor
 @Tag(name = "Order",description = "Действия с заказом")
 public class OrderController {
+
+    private static final String ADD_COMMENT = "/api/v1/order/comment/add";
+
+    private static final String EDIT_COMMENT = "/api/v1/order/comment/edit";
+
+    private static final String EDIT_ORDER = "/api/v1/order/edit/{id}";
+
+    private static final String DELETE_ORDER = "/api/v1/order/delete/{id}";
+
+    private static final String CREATE_ORDER = "/api/v1/order/create";
+
+    private static final String GET_ORDER = "/api/v1/order/{id}";
+
+    private static final String GET_LIST_OF_ORDERS = "/api/v1/order/list";
+
 
     private final OrderService orderService;
 
     private final CommentService commentService;
 
 
-    @PostMapping("/create")
+    @PostMapping(CREATE_ORDER)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponse(description = "Операция по созданию заказа",responseCode = "201")
     public OrderDto createOrder(@Valid @RequestBody OrderDto order) {
         return orderService.create(order);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(GET_ORDER)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Операция по поиску заказа на складе",responseCode = "200")
     public OrderDto getOrder(@PathVariable String id,
@@ -45,15 +59,15 @@ public class OrderController {
         return orderService.findOrderOnWarehouse(id,developerName);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(DELETE_ORDER)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @ApiResponse(description = "Операция по поиску удалению",responseCode = "204")
+    @ApiResponse(description = "Операция по  удалению заказа",responseCode = "204")
     public void deleteOrder(@PathVariable String id) {
         orderService.delete(id);
     }
 
 
-    @GetMapping("/list")
+    @GetMapping(GET_LIST_OF_ORDERS)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Операция по получению списка заказов с пагинацией",responseCode = "200")
     public ListOrderDto getOrders(@RequestParam(defaultValue = "0") int pageNumber,
@@ -62,16 +76,15 @@ public class OrderController {
 
     }
 
-    @PatchMapping("/edit/{id}")
+    @PatchMapping(EDIT_ORDER)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiResponse(description = "Изменение заказа",responseCode = "200")
-
     public void editOrder(@PathVariable String id,
                           @RequestBody OrderDto order) {
         orderService.updateOrderStatus(id, order);
     }
 
-    @PostMapping("/comment/add")
+    @PostMapping(ADD_COMMENT)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponse(description = "Добавление комментария для заказа",responseCode = "200")
     public OrderDto setCommentForOrder(@RequestParam String orderId,
@@ -79,7 +92,7 @@ public class OrderController {
         return commentService.addCommentForOrder(orderId,commentDto);
     }
 
-    @PatchMapping("/comment/edit")
+    @PatchMapping(EDIT_COMMENT)
     @ResponseStatus(HttpStatus.RESET_CONTENT)
     @ApiResponse(description = "Редактирование комментария для заказа",responseCode = "201")
     public void editCommentForOrder(@RequestParam String orderId,
