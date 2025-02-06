@@ -11,8 +11,6 @@ public interface CustomNotificationMapper {
 
     List<NotificationDto> mapToDtoList(List<Notification> entities);
 
-    List<Notification> mapToDtoEntity(List<NotificationDto> entities);
-
     NotificationDto mapToDto(Notification entity);
 
 

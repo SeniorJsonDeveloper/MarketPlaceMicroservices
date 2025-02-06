@@ -73,7 +73,7 @@ public class OrderEntity implements Serializable {
                 ", status='" + status + '\'' +
                 ", message='" + message + '\'' +
                 ", price=" + price +
-                ", userId='" + userId + '\'' +
+                ", developerName='" + userId + '\'' +
                 ", itemId='" + itemId + '\'' +
                 ", warehouseId='" + warehouseId + '\'' +
                 ", userNumber='" + userNumber + '\'' +

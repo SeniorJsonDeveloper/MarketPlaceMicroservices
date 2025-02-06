@@ -2,6 +2,7 @@ package dn.mp_notifications.api.controller;
 import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.api.dto.NotificationDto;
 import dn.mp_notifications.domain.entity.Notification;
+import dn.mp_notifications.domain.event.MessageEvent;
 import dn.mp_notifications.domain.service.SenderService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,7 +46,7 @@ public class NotificationController {
     @PostMapping("/send/")
     @ApiResponse(description = "Отправка уведомления",responseCode = "201")
     @ResponseStatus(HttpStatus.CREATED)
-    public NotificationDto sendNotification(@RequestBody MessageDto messageDto,
+    public NotificationDto sendNotification(@RequestBody MessageEvent messageDto,
                                             @RequestParam String orderId) {
         return service.sendNotification(messageDto, orderId);
     }

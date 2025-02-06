@@ -1,11 +1,9 @@
 package dn.mp_orders.api.dto;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import dn.mp_orders.domain.entity.CommentEntity;
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import java.io.Serial;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -46,8 +44,8 @@ public class OrderDto implements Serializable {
     private Double rating;
 
 //    @NotNull
-    @Schema(name = "userId",description = "Уникальный идентификатор пользователя, совершившего заказ")
-    private String userId;
+    @Schema(name = "developerName",description = "Уникальный идентификатор пользователя, совершившего заказ")
+    private String developerName;
 
 //    @NotNull
     @Schema(name = "warehouseId",description = "Уникальный идентификатор склада, которому принадлежал товар")
@@ -60,7 +58,7 @@ public class OrderDto implements Serializable {
     private List<CommentEntity> comments;
 
     @Schema(name = "countOfProducts",description = "Количество товаров в заказе")
-    private Long count;
+    private Long countOfProducts;
 
     @Override
     public String toString() {
@@ -70,7 +68,7 @@ public class OrderDto implements Serializable {
                 ", message='" + message + '\'' +
                 ", status='" + status + '\'' +
                 ", price=" + price +
-                ", userId='" + userId + '\'' +
+                ", developerName='" + developerName + '\'' +
                 ", warehouseId='" + warehouseId + '\'' +
                 '}';
     }

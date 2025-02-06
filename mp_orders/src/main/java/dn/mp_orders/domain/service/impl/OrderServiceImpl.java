@@ -15,11 +15,11 @@ import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +28,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -65,6 +66,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
 
     private final KafkaTemplate<String, Object> kafkaTemplate;
+
+    private final OkHttpClient okHttpClient;
 
 
     private final Gson gson;
@@ -116,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Cacheable(value = "orderById",key = "#id")
+//    @Cacheable(value = "orderById",key = "#id")
     public OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException,
                                                                                InterruptedException,
                                                                                  TimeoutException {
@@ -125,12 +128,20 @@ public class OrderServiceImpl implements OrderService {
                 ()->findOrderById(id)
         );
         CompletableFuture<WarehouseResponse> warehouseTask = CompletableFuture.supplyAsync(
-                ()-> warehouseHttpClient.getWarehouseId(warehouseName)
+                ()-> {
+                    try {
+                        return warehouseHttpClient.getWarehouseId(warehouseName);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         );
         return orderTask.thenCombine(
                 warehouseTask,(o,warehouseResponse)->{
                  o.setWarehouseId(warehouseResponse.getId());
                  o.setIsExists(warehouseResponse.getIsExists());
+                 o.setCountOfProducts(warehouseResponse.getCountOfProducts());
+                 o.setDeveloperName(warehouseResponse.getDeveloperName());
                  return o;
                 }).exceptionally(
                         ex->{
@@ -142,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    @Cacheable(value = "orderById",key = "#id")
+//    @Cacheable(value = "orderById",key = "#id")
     public OrderDto findOrderById(String id) {
         return orderMapper.toDto(orderRepository.findById(id)
                 .orElseThrow(()-> new OrderNotFound("Order not found")));

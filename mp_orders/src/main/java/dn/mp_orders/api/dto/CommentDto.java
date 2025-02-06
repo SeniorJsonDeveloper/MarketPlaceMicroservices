@@ -33,6 +33,6 @@ public class CommentDto {
     private String orderId;
 
     @JsonIgnore
-    @Schema(name = "userId",description = "Уникальный идентификатор пользователя, оставившего комментарий")
+    @Schema(name = "developerName",description = "Уникальный идентификатор пользователя, оставившего комментарий")
     private String userId;
 }
