@@ -2,23 +2,26 @@ package dn.mp_notifications.domain.configuration;
 import com.google.gson.JsonParser;
 import dn.mp_notifications.api.dto.EmailDto;
 import dn.mp_notifications.api.dto.MessageDto;
+import dn.mp_notifications.domain.event.MessageEvent;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.RestClient;
+
+import java.math.BigDecimal;
 
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
 public class KafkaListenerConfig {
 
-    private final SenderService senderService;
 
-    private final EmailConfig emailConfig;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     @SneakyThrows
@@ -42,34 +45,30 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("id")
                     .getAsString();
-            MessageDto dto = new MessageDto();
-            dto.setId(id);
-            dto.setMessage(message);
-            dto.setName(name);
-            dto.setStatus(status);
-            senderService.sendNotification(dto,dto.getId());
-            EmailDto emailDto = new EmailDto();
-            emailDto.setPhoneNumber(dto.getName());
-            emailDto.setSenderId(dto.getName());
-            emailDto.setMessage(dto.getMessage());
-
-            try {
-                emailConfig.sendEmail(emailDto);//TODO:
-            }catch (Exception e){
-                log.error("Не удалось отправить письмо по причине: {}", e.getMessage());
-            }
-
-            log.info("Received message: {}, " +
-                     "Received name: {}, " +
-                     "Received status: {} "+
-                     "ReceivedId:{} ", dto.getMessage(),
-                    dto.getName(),
-                    dto.getStatus(),
-                    dto.getId());
-
+            eventPublisher.publishEvent(new MessageEvent(
+                    id,message,status, BigDecimal.ZERO));
         }catch (Exception e){
             log.error("Error parsing json payload", e);
         }
+
+
+//            try {
+//                emailConfig.sendEmail(emailDto);//TODO:
+//            }catch (Exception e){
+//                log.error("Не удалось отправить письмо по причине: {}", e.getMessage());
+//            }
+//
+//            log.info("Received message: {}, " +
+//                     "Received name: {}, " +
+//                     "Received status: {} "+
+//                     "ReceivedId:{} ", dto.getMessage(),
+//                    dto.getName(),
+//                    dto.getStatus(),
+//                    dto.getId());
+//
+//        }catch (Exception e){
+//            log.error("Error parsing json payload", e);
+//        }
 
 
     }

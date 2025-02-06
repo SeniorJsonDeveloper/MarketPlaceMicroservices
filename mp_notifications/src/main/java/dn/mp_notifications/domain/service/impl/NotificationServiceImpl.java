@@ -10,11 +10,14 @@ import dn.mp_notifications.api.dto.mapper.CustomNotificationMapper;
 import dn.mp_notifications.domain.configuration.EmailConfig;
 import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.api.dto.NotificationDto;
+import dn.mp_notifications.domain.event.MessageEvent;
 import dn.mp_notifications.domain.repository.NotificationRepository;
 import dn.mp_notifications.domain.service.SenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -44,6 +47,7 @@ public class NotificationServiceImpl implements SenderService{
 
     private static final String PROCESSING = "В ОБРАБОТКЕ";
 
+    private final OkHttpClient okHttpClient;
 
     private final NotificationRepository notificationRepository;
 
@@ -112,30 +116,17 @@ public class NotificationServiceImpl implements SenderService{
     }
 
     @Override
-    public NotificationDto sendNotification(MessageDto messageDto, String orderId) {
-        MessageDto message = new MessageDto();
-        message.setId(UUID.randomUUID().toString());
-        message.setMessage(messageDto.getMessage());
-        message.setName(messageDto.getName());
-        message.setSecretCode(generateCode());
-        message.setStatus(messageDto.getStatus());
-        message.setPrice(BigDecimal.ZERO);
-        message.setRating(messageDto.getRating());
-        EmailDto emailDto = new EmailDto();
-        emailDto.setPhoneNumber(message.getName());
-        emailDto.setSenderId(message.getName());
-        emailDto.setMessage(message.getMessage());
-        log.info("Sending notification: {}", message.getMessage());
-
+    public NotificationDto sendNotification(MessageEvent event , String orderId) {
         Notification notification = new Notification();
         notification.setId(UUID.randomUUID().toString());
-        notification.setMessage(message.getMessage());
         notification.setCreatedAt(LocalDateTime.now());
-        notification.setStatus(message.getStatus());
-        notification.setTitle(message.getName());
+        notification.setStatus(event.getStatus());
+        notification.setTitle(event.getMessage());
         notification.setOrderId(orderId);
         notificationRepository.save(notification);
-        
+
+        EmailDto emailDto = new EmailDto();
+        emailDto.setMessage(event.getMessage());
         ExecutorService executorService = Executors.newFixedThreadPool(3);
                 executorService.execute(() -> {
                 getNotificationsCount();
@@ -188,20 +179,6 @@ public class NotificationServiceImpl implements SenderService{
 
 
 
-    public void sendAsyncNotification(MessageDto messageDto, String orderId) {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        executorService.execute(() -> {
-            CompletableFuture<NotificationDto> future = CompletableFuture.completedFuture(sendNotification(messageDto, orderId));
-            future.whenComplete((notificationDto, throwable) -> {
-                if (throwable != null) {
-                    log.error(throwable.getMessage(), throwable);
-                }
-                else {
-                    log.info("Notification was sent successfully: {}", notificationDto);
-                }
-            });
-        });
-    }
 
 
 }

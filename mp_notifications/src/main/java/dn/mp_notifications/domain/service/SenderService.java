@@ -2,6 +2,7 @@ package dn.mp_notifications.domain.service;
 import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.domain.entity.Notification;
 import dn.mp_notifications.api.dto.NotificationDto;
+import dn.mp_notifications.domain.event.MessageEvent;
 import org.springframework.data.domain.Page;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface SenderService {
 
     String generateCode();
 
-    NotificationDto sendNotification(MessageDto messageDto, String orderId);
+    NotificationDto sendNotification(MessageEvent messageDto, String orderId);
 
     String sendSmsCode(String phoneNumber);
 

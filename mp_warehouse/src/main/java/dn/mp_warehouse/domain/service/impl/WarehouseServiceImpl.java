@@ -47,17 +47,18 @@ public class WarehouseServiceImpl implements WarehouseService {
                         .stream()
                         .mapToLong(ProductEntity::getCountOfProducts)
                         .sum();
+                originalEntity.setCountOfProducts(countOfProducts);
 
                 WarehouseDto warehouseDto = new WarehouseDto();
                 warehouseDto.setId(originalEntity.getId());
-                warehouseDto.setName(developerName);
+                warehouseDto.setDeveloperName(originalEntity.getDeveloperName());
                 warehouseDto.setIsExists(true);
-                warehouseDto.setCount(countOfProducts);
+                warehouseDto.setCountOfProducts(originalEntity.getCountOfProducts());
 
 
                 log.info("WarehouseInfo is: {}, {}, {}, {}", warehouseDto.getId(),
                         warehouseDto.getName(), warehouseDto.getIsExists(),
-                        warehouseDto. getCount());
+                        warehouseDto.getCountOfProducts());
 
                 return warehouseDto;
             } else {

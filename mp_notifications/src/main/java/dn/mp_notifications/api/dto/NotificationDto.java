@@ -26,7 +26,7 @@ public class NotificationDto {
     private String title;
 
     @JsonIgnore
-    @Schema(name = "userId",description = "Уникальный идентификатор получателя уведомления")
+    @Schema(name = "developerName",description = "Уникальный идентификатор получателя уведомления")
     private String userId;
 
     @JsonIgnore

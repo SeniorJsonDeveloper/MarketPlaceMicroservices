@@ -1,7 +1,6 @@
 package dn.mp_warehouse.api.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Schema(name = "Warehouse",description = "ДТО склада с товарами")
 public class WarehouseDto {
 
@@ -32,6 +30,6 @@ public class WarehouseDto {
     private Boolean isExists;
 
     @Schema(name = "count",description = "Количество товаров на складе")
-    private Long count;
+    private Long countOfProducts;
 
 }

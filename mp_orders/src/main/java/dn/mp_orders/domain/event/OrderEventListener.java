@@ -24,8 +24,6 @@ public class OrderEventListener {
     @Value("${spring.kafka.topic.second_name}")
     private String OTWTopicName;
 
-
-
     private final Gson gson;
 
     @EventListener(OrderSavedEvent.class)
