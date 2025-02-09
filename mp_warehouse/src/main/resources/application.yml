@@ -1,0 +1,30 @@
+server:
+  port: 8081
+spring:
+  liquibase:
+    enabled: false
+  application:
+    name: warehouse-server
+  main:
+    allow-circular-references: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: danilanovikov
+    password: demo2228
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    open-in-view: true
+    hibernate:
+      ddl-auto: update
+  config:
+    import: optional:file:.env[.properties]
+  kafka:
+    consumer:
+      group-id: 1
+    bootstrap-servers: localhost:9092
+    topic:
+      name: OrderToWarehouse
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka
