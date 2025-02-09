@@ -3,6 +3,9 @@ server:
 spring:
   config:
     import: optional:file:.env[.properties]
+  application:
+    name: notification-service
+
   main:
     allow-circular-references: true
   mail:
@@ -25,6 +28,7 @@ spring:
       auto-offset-reset: earliest
     topic:
       name: OrderToNotifications
+
 
 cache:
   redis:
@@ -67,5 +71,8 @@ integration:
     token: wlra;eksflv;dfgpsdlfngkdhfjtngkhjglghkjfd
   url:
     orderUrl: http://localhost:8084
-
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka
 

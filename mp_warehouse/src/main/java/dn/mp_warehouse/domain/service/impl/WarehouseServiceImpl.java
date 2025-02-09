@@ -1,6 +1,6 @@
 package dn.mp_warehouse.domain.service.impl;
-import dn.mp_warehouse.api.dto.WarehouseDto;
 import dn.mp_warehouse.api.dto.mapper.WarehouseMapper;
+import dn.mp_warehouse.api.dto.warehouse.WarehouseOutDto;
 import dn.mp_warehouse.api.exception.WarehouseNotFoundException;
 import dn.mp_warehouse.domain.entity.ProductEntity;
 import dn.mp_warehouse.domain.entity.WareHouseEntity;
@@ -27,13 +27,13 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
-    public WarehouseDto getById(String id) {
+    public WarehouseOutDto getById(String id) {
         return warehouseMapper.toDto(wareHouseRepository.findById(id)
                 .orElseThrow(()->new WarehouseNotFoundException("Склад не найден")));
     }
 
     @Override
-    public WarehouseDto getWarehouseByName(String developerName) {
+    public WarehouseOutDto getWarehouseByName(String developerName) {
 
             if (developerName == null || developerName.isBlank()) {
                 throw new IllegalArgumentException("Developer name must not be null or empty");
@@ -49,20 +49,20 @@ public class WarehouseServiceImpl implements WarehouseService {
                         .sum();
                 originalEntity.setCountOfProducts(countOfProducts);
 
-                WarehouseDto warehouseDto = new WarehouseDto();
-                warehouseDto.setId(originalEntity.getId());
-                warehouseDto.setDeveloperName(originalEntity.getDeveloperName());
-                warehouseDto.setIsExists(true);
-                warehouseDto.setCountOfProducts(originalEntity.getCountOfProducts());
+                WarehouseOutDto warehouseOutDto = new WarehouseOutDto();
+                warehouseOutDto.setId(originalEntity.getId());
+                warehouseOutDto.setDeveloperName(originalEntity.getDeveloperName());
+                warehouseOutDto.setIsExists(true);
+                warehouseOutDto.setCountOfProducts(originalEntity.getCountOfProducts());
 
 
-                log.info("WarehouseInfo is: {}, {}, {}, {}", warehouseDto.getId(),
-                        warehouseDto.getName(), warehouseDto.getIsExists(),
-                        warehouseDto.getCountOfProducts());
+                log.info("WarehouseInfo is: {}, {}, {}, {}", warehouseOutDto.getId(),
+                        warehouseOutDto.getName(), warehouseOutDto.getIsExists(),
+                        warehouseOutDto.getCountOfProducts());
 
-                return warehouseDto;
+                return warehouseOutDto;
             } else {
-                return new WarehouseDto();
+                return new WarehouseOutDto();
             }
         }
     }

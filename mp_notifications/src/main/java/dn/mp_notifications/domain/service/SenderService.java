@@ -1,9 +1,10 @@
 package dn.mp_notifications.domain.service;
-import dn.mp_notifications.api.dto.MessageDto;
-import dn.mp_notifications.domain.entity.Notification;
+
 import dn.mp_notifications.api.dto.NotificationDto;
+import dn.mp_notifications.domain.entity.NotificationEntity;
 import dn.mp_notifications.domain.event.MessageEvent;
 import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 
@@ -13,15 +14,15 @@ public interface SenderService {
 
     Page<NotificationDto> getPagedData(int pageNumber, int pageSize);
 
-    Page<Notification> findAllNotificationsWithPaging(NotificationDto notificationDto);
+    Page<NotificationEntity> findAllNotificationsWithPaging(NotificationDto notificationDto);
 
-    List<Notification> findAllNotifications();
+    List<NotificationEntity> findAllNotifications();
 
     Long getNotificationsCount();
 
     NotificationDto findNotificationById(String id);
 
-    void addToList(Notification notification);
+    void addToList(NotificationEntity notificationEntity);
 
     String generateCode();
 
@@ -29,7 +30,7 @@ public interface SenderService {
 
     String sendSmsCode(String phoneNumber);
 
-    void deleteNotifications(List<Notification> notifications);
+    void deleteNotifications(List<NotificationEntity> notificationEntities);
 
 
 

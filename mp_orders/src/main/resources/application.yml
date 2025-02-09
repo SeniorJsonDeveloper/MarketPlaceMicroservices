@@ -13,8 +13,14 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
     show-sql: true
     open-in-view: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
 
 
 
@@ -30,6 +36,16 @@ spring:
 
   main:
     allow-bean-definition-overriding: true
+  application:
+    name: order-service
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8080/eureka
+
+
 
 app:
   redis:

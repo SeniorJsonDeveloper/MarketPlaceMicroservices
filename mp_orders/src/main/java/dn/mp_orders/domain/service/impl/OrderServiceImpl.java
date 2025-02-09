@@ -1,15 +1,16 @@
 
 package dn.mp_orders.domain.service.impl;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import dn.mp_orders.api.client.WarehouseHttpClient;
-import dn.mp_orders.domain.event.KafkaEvent;
+import dn.mp_orders.api.client.WarehouseResponse;
 import dn.mp_orders.api.dto.ListOrderDto;
 import dn.mp_orders.api.dto.OrderDto;
-import dn.mp_orders.api.client.WarehouseResponse;
+import dn.mp_orders.api.exception.OrderNotFound;
 import dn.mp_orders.api.mapper.OrderMapper;
 import dn.mp_orders.domain.entity.OrderEntity;
-import dn.mp_orders.api.exception.OrderNotFound;
+import dn.mp_orders.domain.event.KafkaEvent;
 import dn.mp_orders.domain.event.OrderSavedEvent;
 import dn.mp_orders.domain.repository.OrderRepository;
 import dn.mp_orders.domain.service.OrderService;
@@ -29,10 +30,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -164,6 +170,9 @@ public class OrderServiceImpl implements OrderService {
     public void sendMessage(final OrderDto orderDto) {
         JsonObject jsonObject = getJsonObject(orderDto);
         String result = gson.toJson(jsonObject);
+        if (result.isBlank()) {
+            throw new IllegalArgumentException("Json result is blank");
+        }
         log.info("Kafka message: {}", result);
         CompletableFuture.supplyAsync(
                 () -> kafkaTemplate.send(OTNTopicName, result))

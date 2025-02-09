@@ -25,6 +25,28 @@ public class GlobalExceptionHandler {
         return handleException(httpStatus,request,exception);
     }
 
+    @ExceptionHandler(ShopNotFoundException.class)
+    public ResponseEntity<ErrorBody> catchProductNotFoundException(HttpStatus httpStatus,
+                                                                   WebRequest request,
+                                                                   ShopNotFoundException exception){
+        return handleException(httpStatus,request,exception);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorBody> catchException(HttpStatus httpStatus,
+                                                    WebRequest request,
+                                                    Exception exception){
+        return handleException(httpStatus,request,exception);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorBody> catchException(HttpStatus httpStatus,
+                                                    WebRequest request,
+                                                    BadRequestException exception){
+        return handleException(httpStatus,request,exception);
+    }
+
+
     private ResponseEntity<ErrorBody> handleException(HttpStatusCode httpStatusCode, WebRequest request,Exception e) {
         return  ResponseEntity.ok(
                 ErrorBody.builder()

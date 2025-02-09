@@ -1,7 +1,8 @@
 package dn.mp_orders.api.client;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import dn.mp_orders.api.exception.BadRequestException;
 import dn.mp_orders.api.exception.OrderNotFound;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -26,17 +25,9 @@ public class WarehouseHttpClient {
     @Value("${web.integration.warehouseUrl}")
     private String warehouseUrl;
 
-    private final RestClient restClient;
-
     private final OkHttpClient okHttpClient;
 
     private final ObjectMapper objectMapper;
-
-
-
-
-
-    private final RedisTemplate<String,WarehouseResponse> redisTemplate;
 
     public WarehouseResponse getWarehouseId(String developerName) throws IOException {
         String uri = UriComponentsBuilder.fromUri(URI.create(warehouseUrl))
@@ -52,15 +43,18 @@ public class WarehouseHttpClient {
             if (!response.isSuccessful()) {
                 throw new OrderNotFound("Заказ на складе не найден");
             }
-            var responseBody = response.body().string();
-            log.info("Response body: {}", responseBody);
+            if (!request.method().equals("GET")){
+                throw new BadRequestException("HTTP METHOD MUST BE GET");
+            }
 
+            var responseBody = Objects.requireNonNull(response.body()).string();
+            log.info("Response body: {}", responseBody);
 
             var warehouseResponse = objectMapper.readValue(responseBody, WarehouseResponse.class);
             log.info("Response: {}", warehouseResponse);
             return warehouseResponse;
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             log.error("Failed to get warehouse id: {}", e.getMessage(), e);
             return null;
         }

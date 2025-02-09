@@ -1,8 +1,8 @@
 package dn.mp_warehouse.domain.service;
 
-import dn.mp_warehouse.api.dto.ProductFilterDto;
-import dn.mp_warehouse.api.dto.ProductInputDto;
-import dn.mp_warehouse.api.dto.ProductOutDto;
+import dn.mp_warehouse.api.dto.product.ProductFilterDto;
+import dn.mp_warehouse.api.dto.product.ProductInputDto;
+import dn.mp_warehouse.api.dto.product.ProductOutDto;
 import dn.mp_warehouse.domain.entity.ProductEntity;
 import org.springframework.data.domain.Page;
 

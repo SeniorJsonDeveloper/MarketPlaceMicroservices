@@ -1,12 +1,11 @@
 package dn.mp_warehouse.domain.entity;
-
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -26,9 +25,11 @@ public class ShopEntity {
 
     private String description;
 
-    private String countOfDeals;
+    private Integer totalCountOfDeals;
 
+    private Double rating;
 
+    private BigDecimal deposit;
 
     @OneToMany(mappedBy = "shop")
     private List<ProductEntity> products;

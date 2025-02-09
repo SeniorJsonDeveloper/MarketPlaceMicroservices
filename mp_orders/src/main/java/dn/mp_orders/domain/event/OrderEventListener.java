@@ -1,4 +1,5 @@
 package dn.mp_orders.domain.event;
+
 import com.google.gson.Gson;
 import dn.mp_orders.api.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
