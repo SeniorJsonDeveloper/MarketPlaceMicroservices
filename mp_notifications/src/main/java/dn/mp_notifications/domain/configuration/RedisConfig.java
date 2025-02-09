@@ -1,6 +1,6 @@
 package dn.mp_notifications.domain.configuration;
 
-import dn.mp_notifications.domain.entity.Notification;
+import dn.mp_notifications.domain.entity.NotificationEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -69,7 +69,7 @@ public class RedisConfig {
                 .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
-                        .fromSerializer(new Jackson2JsonRedisSerializer<>(Notification.class)));
+                        .fromSerializer(new Jackson2JsonRedisSerializer<>(NotificationEntity.class)));
     }
 
 }

@@ -1,9 +1,9 @@
 package dn.mp_warehouse.domain.service.impl;
 
-import dn.mp_warehouse.api.dto.ProductFilterDto;
-import dn.mp_warehouse.api.dto.ProductInputDto;
-import dn.mp_warehouse.api.dto.ProductOutDto;
 import dn.mp_warehouse.api.dto.mapper.ProductMapper;
+import dn.mp_warehouse.api.dto.product.ProductFilterDto;
+import dn.mp_warehouse.api.dto.product.ProductInputDto;
+import dn.mp_warehouse.api.dto.product.ProductOutDto;
 import dn.mp_warehouse.api.exception.ProductNotFoundException;
 import dn.mp_warehouse.domain.entity.ProductEntity;
 import dn.mp_warehouse.domain.repository.ProductRepository;

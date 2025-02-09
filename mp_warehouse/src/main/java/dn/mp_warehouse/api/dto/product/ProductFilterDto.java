@@ -1,6 +1,11 @@
-package dn.mp_warehouse.api.dto;
+package dn.mp_warehouse.api.dto.product;
+
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigDecimal;
 
 @Getter

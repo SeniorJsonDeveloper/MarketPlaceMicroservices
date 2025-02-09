@@ -14,9 +14,17 @@ public interface DeliveryService {
 
     DeliveryDto getDeliveryById(String id);
 
-    void updateDeliveryStatus();
+    void updateDeliveryStatus(String id, String status);
 
-    void deleteDelivery();
+    void deleteDelivery(String id);
+
+    void cancelDelivery(String id);
+
+
+
+
+
+
 
 
 

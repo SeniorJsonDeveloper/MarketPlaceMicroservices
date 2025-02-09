@@ -1,7 +1,6 @@
 package dn.mp_notifications.api.controller;
-import dn.mp_notifications.api.dto.MessageDto;
 import dn.mp_notifications.api.dto.NotificationDto;
-import dn.mp_notifications.domain.entity.Notification;
+import dn.mp_notifications.domain.entity.NotificationEntity;
 import dn.mp_notifications.domain.event.MessageEvent;
 import dn.mp_notifications.domain.service.SenderService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,7 +38,7 @@ public class NotificationController {
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Получение списка уведомлений",responseCode = "200")
-    public List<Notification> getNotificationList() {
+    public List<NotificationEntity> getNotificationList() {
         return service.findAllNotifications();
     }
 

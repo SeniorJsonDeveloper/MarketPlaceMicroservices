@@ -1,4 +1,4 @@
-package dn.mp_warehouse.api.dto;
+package dn.mp_warehouse.api.dto.product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(name = "cost",description = "Ценник товара")
-public class ProductListDto {
+public class ListProductDto {
 
     @Schema(name = "cost",description = "Ценник товара")
     private List<ProductOutDto> products = new ArrayList<>();

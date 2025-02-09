@@ -1,12 +1,10 @@
 package dn.mp_notifications.domain.configuration;
 
-import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
+import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 
