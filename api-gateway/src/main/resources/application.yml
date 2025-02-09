@@ -1,0 +1,42 @@
+server:
+  port: 8765
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+
+      routes:
+          - id: order-service-route
+            uri: http://localhost:8084/api/v1/order
+            predicates:
+              - Path=/order-service/**
+            filters:
+              - StripPrefix=1
+          - id: warehouse-service-route
+            uri: http://localhost:8081/api/v1/warehouse
+            predicates:
+              - Path=/warehouse-service/**
+            filters:
+              - StripPrefix=1
+          - id: notifications-service-route
+            uri: http://localhost:8085/api/v1/notifications
+            predicates:
+              - Path=/notifications-service/**
+            filters:
+              - StripPrefix=1
+
+
+
+
+
+eureka:
+  client:
+   service-url:
+      defaultZone: http://localhost:8080/eureka
+  instance:
+    prefer-ip-address: true
+
