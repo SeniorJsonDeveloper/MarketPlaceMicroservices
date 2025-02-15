@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 @Schema(name = "ProductFilter",description = "ДТО для фильтрации товаров по заданным параметрам")
 public class ProductFilterDto {
 
-
     @Schema(name = "country",description = "Страна производитель товара")
     private String country;
 

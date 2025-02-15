@@ -11,10 +11,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(name = "cost",description = "Ценник товара")
+@Schema(name = "ListProduct",description = "ДТО со списком продуктов")
 public class ListProductDto {
 
-    @Schema(name = "cost",description = "Ценник товара")
+    @Schema(name = "products",description = "Список продуктов")
     private List<ProductOutDto> products = new ArrayList<>();
 
 }

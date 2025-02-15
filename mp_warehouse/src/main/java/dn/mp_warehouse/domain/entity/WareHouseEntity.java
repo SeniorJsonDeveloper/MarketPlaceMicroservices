@@ -6,35 +6,55 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(schema = "warehouse",name = "mp_warehouse")
+@Table(schema = "warehouse",name = "warehouses")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class WareHouseEntity implements Serializable {
+public class WareHouseEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
+    @Column(nullable = false,unique = true,length = 50)
     private String name;
 
-    @OneToMany(mappedBy = "warehouse")
-    private List<ProductEntity> products = new ArrayList<>();
-
-    private String developerName;
-
+    @Column(nullable = false)
     private Boolean isExists;
 
     private Long countOfProducts;
 
-    @ManyToMany(mappedBy = "warehouses",fetch = FetchType.LAZY)
-    private List<ShopEntity> shops;
+    private Long shopId;
+
+    @OneToMany(mappedBy = "warehouse")
+    private List<ProductEntity> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "warehouse")
+    private Set<LocationEntity> locations = new HashSet<>();
+
+    @ManyToMany(mappedBy = "warehouses")
+    private Set<Event> events = new HashSet<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "warehouse_developers",
+    joinColumns = @JoinColumn(name = "warehouse_id"),
+    inverseJoinColumns = @JoinColumn(name = "developer_id"),
+    schema = "warehouse")
+    private List<DeveloperEntity> developers = new ArrayList<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "delivery_warehouse",
+    joinColumns = @JoinColumn(name = "warehouse_id"),
+    inverseJoinColumns = @JoinColumn(name = "delivery_id"),
+    schema = "warehouse")
+    private List<DeliveryEntity> deliveries = new ArrayList<>();
 
 
 

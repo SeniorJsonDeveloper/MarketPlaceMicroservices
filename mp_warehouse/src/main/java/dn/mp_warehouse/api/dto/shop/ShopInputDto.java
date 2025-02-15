@@ -14,10 +14,13 @@ import java.math.BigDecimal;
 public class ShopInputDto {
 
     @Schema(name = "id",description = "Уникальный идентификатор магазина")
-    private String id;
+    private Long id;
 
     @Schema(name = "name",description = "Название магазина")
     private String name;
+
+    @Schema(name = "category",description = "Категория магазина")
+    private String category;
 
     @Schema(name = "description",description = "Описание магазина")
     private String description;

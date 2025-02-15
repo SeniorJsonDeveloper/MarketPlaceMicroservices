@@ -46,6 +46,20 @@ public class GlobalExceptionHandler {
         return handleException(httpStatus,request,exception);
     }
 
+    @ExceptionHandler(DeveloperNameNotFoundException.class)
+    public ResponseEntity<ErrorBody> catchException(HttpStatus httpStatus,
+                                                    WebRequest request,
+                                                    DeveloperNameNotFoundException exception){
+        return handleException(httpStatus,request,exception);
+    }
+
+    @ExceptionHandler(DeliveryNotFoundException.class)
+    public ResponseEntity<ErrorBody> catchException(HttpStatus httpStatus,
+                                                    WebRequest request,
+                                                    DeliveryNotFoundException exception){
+        return handleException(httpStatus,request,exception);
+    }
+
 
     private ResponseEntity<ErrorBody> handleException(HttpStatusCode httpStatusCode, WebRequest request,Exception e) {
         return  ResponseEntity.ok(

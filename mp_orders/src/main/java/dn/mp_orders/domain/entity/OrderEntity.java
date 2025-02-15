@@ -22,8 +22,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "orders_table",schema = "orders")
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Table(name = "orders_table",schema = "mp_orders")
 public class OrderEntity implements Serializable {
 
     @Id
@@ -64,9 +63,6 @@ public class OrderEntity implements Serializable {
     @OneToMany(mappedBy = "order")
     private List<CommentEntity> commentIds;
 
-    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
-    @JoinColumn(name = "delivery_id")
-    private DeliveryEntity delivery;
 
 
     @Override

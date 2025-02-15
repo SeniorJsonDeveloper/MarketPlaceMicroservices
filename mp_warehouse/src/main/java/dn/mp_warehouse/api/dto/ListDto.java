@@ -1,19 +1,19 @@
 package dn.mp_warehouse.api.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.ArrayList;
 
 @Data
-@NoArgsConstructor
-public class ListDto<T> {
+@Schema(name = "ListDto",description = "Обобщенное ДТО со списком элементов")
+public class ListDto <T>{
 
-    private Page<T> list;
+    private Page<T> collection;
 
-    public ListDto(int totalElements) {
-        this.list = new PageImpl<>(new ArrayList<>(totalElements));
+    public ListDto(Page<T> collection,int totalElements) {
+        this.collection = new PageImpl<>(new ArrayList<>(totalElements));
     }
 }

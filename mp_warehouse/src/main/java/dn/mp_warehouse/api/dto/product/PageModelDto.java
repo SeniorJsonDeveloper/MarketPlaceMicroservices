@@ -20,6 +20,7 @@ public class PageModelDto {
     @Schema(name = "pageSize",description = "Количество элементов умещающихся на странице")
     private Integer pageSize = 10;
 
+
     public PageRequest getPageRequest() {
         return PageRequest.of(pageNumber, pageSize);
     }
