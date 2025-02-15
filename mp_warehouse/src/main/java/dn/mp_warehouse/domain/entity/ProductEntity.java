@@ -8,18 +8,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(schema = "warehouse",name = "mp_product")
+@Table(schema = "warehouse",name = "products")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+public class ProductEntity extends BaseEntity{
 
     @Column(nullable = false)
     private String productName;
@@ -29,11 +27,7 @@ public class ProductEntity {
 
     private String description;
 
-    private String category;
-
     private String brand;
-
-    private String country;
 
     @Column(name = "count")
     private Long countOfProducts;
@@ -41,8 +35,7 @@ public class ProductEntity {
     @Column(unique = true)
     private String buyerId;
 
-    @Column(unique = true)
-    private String sellerId;
+
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "warehouse_id")
@@ -51,6 +44,28 @@ public class ProductEntity {
     @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "shop_id")
     private ShopEntity shop;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    private Set<Event> events = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private CategoryEntity category;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "location_id")
+    private LocationEntity location;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delivery_id")
+    private DeliveryEntity delivery;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "developer_id")
+    private DeveloperEntity developer;
+
+
+
 
 
 

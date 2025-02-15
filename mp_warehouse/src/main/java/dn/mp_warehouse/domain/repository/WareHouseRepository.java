@@ -8,11 +8,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface WareHouseRepository extends JpaRepository<WareHouseEntity, String>,
+public interface WareHouseRepository extends JpaRepository<WareHouseEntity, Long>,
                                              JpaSpecificationExecutor<WareHouseEntity> {
 
 
-    Optional<WareHouseEntity> findByDeveloperName(String developerName);
+    Optional<WareHouseEntity> findByDevelopers_Name(String developersName);
 
 
 
