@@ -3,6 +3,8 @@ package dn.mp_orders.domain.event;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Schema(name = "KafkaEvent",description = "Событие, отправляющееся в кафку")
 public class KafkaEvent {
@@ -18,6 +20,9 @@ public class KafkaEvent {
 
     @Schema(name = "name",description = "Название заказа")
     private String name;
+
+    @Schema(name = "price",description = "Сумма заказа")
+    private BigDecimal price;
 
     @Override
     public String toString() {

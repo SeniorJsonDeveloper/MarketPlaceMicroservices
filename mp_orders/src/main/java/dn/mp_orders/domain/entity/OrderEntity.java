@@ -1,7 +1,7 @@
 package dn.mp_orders.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,21 +12,29 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 
-//@RedisHash("orders")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "orders_table",schema = "mp_orders")
+@Table(name = "orders_table",
+        schema = "orders",
+        indexes = {
+        @Index(name = "idx_orderentity_productid",
+                columnList = "productId")
+})
 public class OrderEntity implements Serializable {
 
     @Id
-    private String id;
+    @Column(nullable = false,updatable = false,unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String name;
 
@@ -38,6 +46,11 @@ public class OrderEntity implements Serializable {
     private String status;
 
     private Double rating;
+
+    private Long countOfProducts;
+
+    @ElementCollection
+    private Set<Long> productId = new HashSet<>();
 
     private String message;
 
@@ -60,36 +73,8 @@ public class OrderEntity implements Serializable {
 
     private Boolean isExists;
 
-    @OneToMany(mappedBy = "order")
-    private List<CommentEntity> commentIds;
 
+    @OneToMany(mappedBy = "order",cascade = CascadeType.MERGE)
+    private List<CommentEntity> comments;
 
-
-    @Override
-    public String toString() {
-        return "OrderEntity{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", status='" + status + '\'' +
-                ", message='" + message + '\'' +
-                ", price=" + price +
-                ", developerName='" + userId + '\'' +
-                ", itemId='" + itemId + '\'' +
-                ", warehouseId='" + warehouseId + '\'' +
-                ", userNumber='" + userNumber + '\'' +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderEntity order = (OrderEntity) o;
-        return Objects.equals(getId(), order.getId()) && Objects.equals(getName(), order.getName()) && Objects.equals(getCreatedAt(), order.getCreatedAt()) && Objects.equals(getStatus(), order.getStatus()) && Objects.equals(getRating(), order.getRating()) && Objects.equals(getMessage(), order.getMessage()) && Objects.equals(getPrice(), order.getPrice()) && Objects.equals(getUserId(), order.getUserId()) && Objects.equals(getItemId(), order.getItemId()) && Objects.equals(getWarehouseId(), order.getWarehouseId()) && Objects.equals(getUserNumber(), order.getUserNumber()) && Objects.equals(getIsActive(), order.getIsActive()) && Objects.equals(getIsExists(), order.getIsExists()) && Objects.equals(getCommentIds(), order.getCommentIds());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getCreatedAt(), getStatus(), getRating(), getMessage(), getPrice(), getUserId(), getItemId(), getWarehouseId(), getUserNumber(), getIsActive(), getIsExists(), getCommentIds());
-    }
 }

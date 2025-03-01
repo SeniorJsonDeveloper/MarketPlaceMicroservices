@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -23,23 +25,28 @@ import java.util.concurrent.TimeoutException;
 public class OrderController {
 
     private static final String ADD_COMMENT = "/api/v1/order/comment/add";
-
     private static final String EDIT_COMMENT = "/api/v1/order/comment/edit";
-
     private static final String EDIT_ORDER = "/api/v1/order/edit/{id}";
-
     private static final String DELETE_ORDER = "/api/v1/order/delete/{id}";
-
     private static final String CREATE_ORDER = "/api/v1/order/create";
-
     private static final String GET_ORDER = "/api/v1/order/{id}";
-
     private static final String GET_LIST_OF_ORDERS = "/api/v1/order/list";
-
+    public static final String GET_PRICE_OF_PRODUCT = "/api/v1/order/product/{id}/price";
+    public static final String GET_COUNT_OF_PRODUCT = "/api/v1/order/product/{id}/count";
 
     private final OrderService orderService;
 
     private final CommentService commentService;
+
+    @GetMapping(GET_PRICE_OF_PRODUCT)
+    public BigDecimal getPriceOfProduct(@PathVariable Long id){
+        return orderService.getPriceOfProduct(id);
+    }
+
+    @GetMapping(GET_COUNT_OF_PRODUCT)
+    public Long getCountOfProduct(@PathVariable Long id){
+        return orderService.getCountOfProductsById(id);
+    }
 
 
     @PostMapping(CREATE_ORDER)
@@ -52,9 +59,9 @@ public class OrderController {
     @GetMapping(GET_ORDER)
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Операция по поиску заказа на складе",responseCode = "200")
-    public OrderDto getOrder(@PathVariable String id,
+    public OrderDto getOrder(@PathVariable Long id,
                              @RequestParam(required = false) String developerName) throws ExecutionException,
-                                                                                         InterruptedException,
+                                                                                          InterruptedException,
                                                                                           TimeoutException {
         return orderService.findOrderOnWarehouse(id,developerName);
     }
@@ -62,7 +69,7 @@ public class OrderController {
     @DeleteMapping(DELETE_ORDER)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ApiResponse(description = "Операция по  удалению заказа",responseCode = "204")
-    public void deleteOrder(@PathVariable String id) {
+    public void deleteOrder(@PathVariable Long id) {
         orderService.delete(id);
     }
 
@@ -79,7 +86,7 @@ public class OrderController {
     @PatchMapping(EDIT_ORDER)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ApiResponse(description = "Изменение заказа",responseCode = "200")
-    public void editOrder(@PathVariable String id,
+    public void editOrder(@PathVariable Long id,
                           @RequestBody OrderDto order) {
         orderService.updateOrderStatus(id, order);
     }
@@ -87,9 +94,9 @@ public class OrderController {
     @PostMapping(ADD_COMMENT)
     @ResponseStatus(HttpStatus.CREATED)
     @ApiResponse(description = "Добавление комментария для заказа",responseCode = "200")
-    public OrderDto setCommentForOrder(@RequestParam String orderId,
-                                       @Validated @RequestBody CommentDto commentDto){
-        return commentService.addCommentForOrder(orderId,commentDto);
+    public void setCommentForOrder(@RequestParam String orderId,
+                                   @Validated @RequestBody CommentDto commentDto){
+        commentService.addCommentForOrder(orderId, commentDto);
     }
 
     @PatchMapping(EDIT_COMMENT)

@@ -26,8 +26,7 @@ public class DeliveryEntity extends BaseEntity {
     @ElementCollection(fetch = FetchType.LAZY)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "delivery_status",schema = "orders",
-            joinColumns = @JoinColumn(name = "delivery_status_id")
-    )
+            joinColumns = @JoinColumn(name = "delivery_status_id"))
     private Set<DeliveryStatus> deliveryStatus = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)

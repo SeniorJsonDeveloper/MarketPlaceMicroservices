@@ -1,21 +1,7 @@
-INSERT INTO warehouse.mp_product (
-    id,
-    product_name,
-    cost,
-    description,
-    category,
-    brand,
-    country,
-    count,
-    buyer_id,
-    seller_id,
-    warehouse_id
-) VALUES
-      ('1', 'Продукт 1', 100.50, 'Описание продукта 1',
-       'Электроника',
-       'Sony',
-       'Россия',
-       10,
-       '2',
-       'seller_id',
-       'Main Warehouse')
+INSERT INTO warehouse.products (id,price,count)
+VALUES
+    ('1',99.99,100),
+    ('2',49.50,500),
+    ('3',150.00,228),
+    ('4', 200.00,300),
+    ('5',19.99,420);

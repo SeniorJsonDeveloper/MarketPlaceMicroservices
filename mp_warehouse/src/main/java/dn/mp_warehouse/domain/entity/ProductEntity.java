@@ -19,11 +19,9 @@ import java.util.Set;
 @NoArgsConstructor
 public class ProductEntity extends BaseEntity{
 
-    @Column(nullable = false)
     private String productName;
 
-    @Column(nullable = false)
-    private BigDecimal cost;
+    private BigDecimal price;
 
     private String description;
 

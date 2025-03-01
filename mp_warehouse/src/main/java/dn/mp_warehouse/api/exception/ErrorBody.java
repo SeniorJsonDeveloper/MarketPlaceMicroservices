@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ErrorBody {
 
-    private int httpStatusCode;
+    private int statusCode;
 
     private String message;
 

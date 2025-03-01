@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.io.Serializable;
-
 import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
@@ -18,7 +16,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @AllArgsConstructor
 @Entity
 @Table(name = "comments_table",schema = "orders")
-public class CommentEntity implements Serializable {
+public class CommentEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,8 +30,8 @@ public class CommentEntity implements Serializable {
 
     private int rating;
 
-    @ManyToOne(cascade = CascadeType.ALL,fetch = LAZY)
-    @JoinColumn(name = "order_id",insertable = false,updatable = false)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "order_id")
     private OrderEntity order;
 
 

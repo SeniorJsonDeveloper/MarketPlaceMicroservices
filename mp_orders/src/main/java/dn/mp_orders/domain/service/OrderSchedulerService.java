@@ -1,12 +1,6 @@
 package dn.mp_orders.domain.service;
 
 
-
-
-
-
-
-
 public interface OrderSchedulerService {
 
 

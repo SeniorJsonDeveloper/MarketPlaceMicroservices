@@ -20,7 +20,7 @@ public interface SenderService {
 
     Long getNotificationsCount();
 
-    NotificationDto findNotificationById(String id);
+    NotificationDto findNotificationById(Long id);
 
     void addToList(NotificationEntity notificationEntity);
 
@@ -31,6 +31,8 @@ public interface SenderService {
     String sendSmsCode(String phoneNumber);
 
     void deleteNotifications(List<NotificationEntity> notificationEntities);
+
+
 
 
 

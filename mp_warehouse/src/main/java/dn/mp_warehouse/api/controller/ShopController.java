@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/v1/shop")
-@Tag(name = "shop",description = "Действия с магазинами")
 @RequiredArgsConstructor
+@Tag(name = "shop",description = "Действия с магазинами")
 public class ShopController {
 }

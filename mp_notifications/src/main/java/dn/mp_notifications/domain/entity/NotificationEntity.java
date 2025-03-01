@@ -9,6 +9,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.TimeZone;
+
+import static java.time.ZoneOffset.UTC;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +21,7 @@ import java.time.LocalDateTime;
 public class NotificationEntity {
 
     @Id
-    private String id;
+    private Long id;
 
     private String title;
 

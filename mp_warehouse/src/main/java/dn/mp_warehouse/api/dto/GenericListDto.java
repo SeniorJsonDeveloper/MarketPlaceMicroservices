@@ -8,12 +8,12 @@ import org.springframework.data.domain.PageImpl;
 import java.util.ArrayList;
 
 @Data
-@Schema(name = "ListDto",description = "Обобщенное ДТО со списком элементов")
-public class ListDto <T>{
+@Schema(name = "GenericList",description = "Обобщенное ДТО со списком элементов")
+public class GenericListDto <T>{
 
     private Page<T> collection;
 
-    public ListDto(Page<T> collection,int totalElements) {
+    public GenericListDto(Page<T> collection,int totalElements) {
         this.collection = new PageImpl<>(new ArrayList<>(totalElements));
     }
 }

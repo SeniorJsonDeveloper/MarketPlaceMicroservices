@@ -8,11 +8,13 @@ import java.util.List;
 
 public interface CommentService  {
 
-    OrderDto addCommentForOrder(String orderId, CommentDto comment);
+    void addCommentForOrder(String orderId, CommentDto comment);
 
     void editComment(String orderId, CommentDto comment);
 
-    CommentEntity findCommentById(String id);
+    CommentDto findCommentById(Long id);
 
     Double getRatingByComments(List<CommentEntity> comments);
+
+    List<CommentDto> findAllComments();
 }

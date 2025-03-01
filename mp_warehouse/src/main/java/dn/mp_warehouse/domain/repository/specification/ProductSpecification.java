@@ -2,6 +2,7 @@ package dn.mp_warehouse.domain.repository.specification;
 
 import dn.mp_warehouse.api.dto.product.ProductFilterDto;
 import dn.mp_warehouse.domain.entity.ProductEntity;
+import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;

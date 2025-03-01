@@ -31,13 +31,13 @@ public class NotificationController {
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(description = "Получение уведомления по уникальному идентификатору",responseCode = "200")
-    public NotificationDto getNotificationById(@PathVariable String id) {
+    public NotificationDto getNotificationById(@PathVariable Long id) {
         return service.findNotificationById(id);
     }
 
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    @ApiResponse(description = "Получение списка уведомлений",responseCode = "200")
+    @ApiResponse(description = "Получение всех уведомлений",responseCode = "200")
     public List<NotificationEntity> getNotificationList() {
         return service.findAllNotifications();
     }
