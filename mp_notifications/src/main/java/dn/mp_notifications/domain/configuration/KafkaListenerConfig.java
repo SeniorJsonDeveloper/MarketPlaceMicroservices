@@ -20,7 +20,7 @@ public class KafkaListenerConfig {
     private final ApplicationEventPublisher eventPublisher;
 
 
-    @SneakyThrows
+
     @KafkaListener(topics = "OrderToNotifications", groupId = "1")
     public void listen(final String payload) {
         log.info("Received payload: {}", payload);
@@ -33,10 +33,10 @@ public class KafkaListenerConfig {
                     .getAsJsonObject()
                     .get("status")
                     .getAsString();
-            String id = JsonParser.parseString(payload)
+            Long id = JsonParser.parseString(payload)
                     .getAsJsonObject()
                     .get("id")
-                    .getAsString();
+                    .getAsLong();
             eventPublisher.publishEvent(
                     new MessageEvent(
                     id,message,status, BigDecimal.ZERO)

@@ -1,44 +1,46 @@
 version: '3.7'
 
+networks:
+  kafka-net:
+    name: kafka-net
+    driver: bridge
+
 services:
   redis:
     image: redis:7.4.1
     restart: "no"
     ports:
       - "6379:6379"
+
   zookeeper:
-    image: zookeeper:3.9.3
+    image: zookeeper:3.7.0
+    container_name: zookeeper
     restart: "no"
+    networks:
+      - kafka-net
     ports:
       - "2181:2181"
   kafka:
-    image: confluentinc/cp-kafka:7.8.0
+    image: obsidiandynamics/kafka
+    container_name: kafka
     restart: "no"
+    networks:
+      - kafka-net
     ports:
-      - "29092:29092"
       - "9092:9092"
-    volumes:
-      - kafka_data:/var/lib/kafka/data
     environment:
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: DOCKER_INTERNAL:PLAINTEXT,DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: DOCKER_INTERNAL://:29092,DOCKER_EXTERNAL://:9092
+      KAFKA_ADVERTISED_LISTENERS: DOCKER_INTERNAL://kafka:29092,DOCKER_EXTERNAL://${DOCKER_HOST_IP:-192.168.100.97}:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
     labels:
       amplicode.image: confluent/kafka
-  kafkaui:
-    image: provectuslabs/kafka-ui:v0.4.0
-    restart: "no"
-    ports:
-      - "8989:8080"
-    environment:
-      DYNAMIC_CONFIG_ENABLED: "true"
-      KAFKA_CLUSTERS_0_NAME: zookeeper_cluster
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+
 
   postgres:
     image: postgres:17.2
@@ -51,6 +53,7 @@ services:
       POSTGRES_USER: danilanovikov
       POSTGRES_PASSWORD: demo2228
       POSTGRES_DB: mp
+
 volumes:
   kafka_data:
   postgres_data:

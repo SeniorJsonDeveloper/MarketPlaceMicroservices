@@ -2,6 +2,7 @@ package dn.mp_notifications.domain.service.impl;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;
+import com.twilio.rest.api.v2010.account.Notification;
 import com.twilio.type.PhoneNumber;
 import dn.mp_notifications.api.dto.EmailDto;
 import dn.mp_notifications.api.dto.NotificationDto;
@@ -25,8 +26,10 @@ import org.springframework.stereotype.Service;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -51,6 +54,8 @@ public class NotificationServiceImpl implements SenderService{
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final EmailConfig emailConfig;
+
+    private final Map<Long, Notification> notificationMap = new ConcurrentHashMap<>();
 
 
 
@@ -91,9 +96,8 @@ public class NotificationServiceImpl implements SenderService{
     }
 
     @Override
-    public NotificationDto findNotificationById(String id) {
-        return notificationMapper
-                .toDto(notificationRepository.findById(id)
+    public NotificationDto findNotificationById(Long id) {
+        return notificationMapper.toDto(notificationRepository.findById(id)
                 .orElseThrow(()->new NotFoundException
                                 (MessageFormat.format("Notification with id: {0} not found",id))));
     }
@@ -113,7 +117,7 @@ public class NotificationServiceImpl implements SenderService{
     @Override
     public NotificationDto sendNotification(MessageEvent event , String orderId) {
         NotificationEntity notificationEntity = new NotificationEntity();
-        notificationEntity.setId(UUID.randomUUID().toString());
+        notificationEntity.setId(notificationEntity.getId());
         notificationEntity.setCreatedAt(LocalDateTime.now());
         notificationEntity.setStatus(event.getStatus());
         notificationEntity.setTitle(event.getMessage());

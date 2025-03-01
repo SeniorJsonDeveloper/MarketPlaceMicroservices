@@ -1,17 +1,14 @@
 package dn.mp_notifications.domain.event;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class MessageEvent {
 
-    private String id;
+    private Long id;
 
     private String message;
 
@@ -21,7 +18,7 @@ public class MessageEvent {
 
     private String orderId;
 
-    public MessageEvent(String id, String message, String status, BigDecimal zero) {
+    public MessageEvent(Long id, String message, String status, BigDecimal zero) {
         this.amount = BigDecimal.ZERO;
     }
 }

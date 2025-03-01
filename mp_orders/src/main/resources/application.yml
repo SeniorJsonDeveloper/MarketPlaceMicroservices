@@ -15,7 +15,6 @@ spring:
       ddl-auto: update
 
     show-sql: true
-    open-in-view: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -60,7 +59,7 @@ app:
         expiry: 10m
       orders:
         expiry: 10m
-      comment:
+      comments:
         expiry: 14d
       ordersWithPagination:
         expiry: 20m

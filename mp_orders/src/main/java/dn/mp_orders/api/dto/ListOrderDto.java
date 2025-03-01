@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-
 @NoArgsConstructor
 @Schema(name = "ListOrderDto",description = "Список заказов")
 public class ListOrderDto {

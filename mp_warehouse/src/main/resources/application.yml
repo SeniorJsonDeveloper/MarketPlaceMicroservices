@@ -45,3 +45,7 @@ app:
         expiry: 14d
       ordersWithPagination:
         expiry: 20m
+
+integration:
+  geolocation:
+      api_key: f5c5a2a3eb0f4c39ace02a29628fd8df

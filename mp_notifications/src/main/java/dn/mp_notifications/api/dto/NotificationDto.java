@@ -19,7 +19,7 @@ public class NotificationDto {
     private PageModelDto pageOut = new PageModelDto(0,10);
 
     @Schema(name = "id",description = "Уникальный идентификатор уведомления")
-    private String id;
+    private Long id;
 
     @Schema(name = "title",description = "Текст уведомления")
     private String title;

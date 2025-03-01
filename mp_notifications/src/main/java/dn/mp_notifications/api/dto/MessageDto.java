@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class MessageDto implements Serializable {
 
     @Schema(name = "id",description = "Уникальный идентификатор уведомления")
-    private String id;
+    private Long id;
 
     @Schema(name = "message",description = "Текст сообщения")
     private String message;

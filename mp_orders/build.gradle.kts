@@ -38,21 +38,14 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     implementation("redis.clients:jedis:5.2.0")
     implementation("org.mapstruct:mapstruct:1.5.5.Final")
-    // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-logging
     implementation("org.springframework.boot:spring-boot-starter-logging:3.3.6")
-    // https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit
-    // https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations
     implementation("io.swagger.core.v3:swagger-annotations:2.2.25")
-
-
-
-
-
     annotationProcessor ("org.projectlombok:lombok-mapstruct-binding:0.2.0")
     annotationProcessor ("org.mapstruct:mapstruct-processor:1.5.5.Final")
     implementation ("ch.qos.logback:logback-classic")
     implementation ("net.logstash.logback:logstash-logback-encoder:7.4")
     implementation("com.google.code.gson:gson:2.11.0")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
     runtimeOnly("org.postgresql:postgresql")
     annotationProcessor("org.projectlombok:lombok")
 

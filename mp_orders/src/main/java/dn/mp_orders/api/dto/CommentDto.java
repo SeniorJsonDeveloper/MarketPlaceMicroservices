@@ -33,7 +33,7 @@ public class CommentDto {
 
     @NotBlank
     @Schema(name = "orderId",description = "Уникальный идентификатор заказа, для которого добавляется комментарий")
-    private String orderId;
+    private Long orderId;
 
     @JsonIgnore
     @Schema(name = "developerName",description = "Уникальный идентификатор пользователя, оставившего комментарий")

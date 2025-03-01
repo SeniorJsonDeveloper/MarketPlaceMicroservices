@@ -1,8 +1,11 @@
 package dn.mp_warehouse.domain.configuration;
 
+import okhttp3.Cache;
+import okhttp3.EventListener;
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,4 +23,10 @@ public class WebConfig {
                .followRedirects(false)
                .build();
    }
+
+   @Bean
+   public RestClient restClient(){
+       return RestClient.builder().build();
+   }
+
 }

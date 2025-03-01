@@ -5,7 +5,9 @@ import dn.mp_orders.api.dto.OrderDto;
 import dn.mp_orders.domain.entity.OrderEntity;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -18,15 +20,15 @@ public interface OrderService {
 
     OrderDto create(OrderDto order);
 
-    OrderDto findOrderOnWarehouse(String id, String warehouseName) throws ExecutionException, InterruptedException, TimeoutException;
+    OrderDto findOrderOnWarehouse(Long id, String warehouseName) throws ExecutionException, InterruptedException, TimeoutException;
 
-    OrderDto findOrderById(String id);
+    OrderDto findOrderById(Long id);
 
-    void delete(String id);
+    void delete(Long id);
 
     void deleteAllOrders(List<OrderEntity> orders);
 
-    void updateOrderStatus(String id, OrderDto order);
+    void updateOrderStatus(Long id, OrderDto order);
 
     default Double getTotalRating(List<OrderEntity> orders){
         if (orders == null || orders.isEmpty()) return 0.0;
@@ -35,6 +37,11 @@ public interface OrderService {
                 .average()
                 .orElse(0.0);
     }
+
+    BigDecimal getPriceOfProduct(Long productId);
+
+    Long getCountOfProductsById(Long productId);
+
 
 
 

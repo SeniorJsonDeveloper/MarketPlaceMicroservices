@@ -27,7 +27,9 @@ spring:
       group-id: 1
       auto-offset-reset: earliest
     topic:
-      name: OrderToNotifications
+      otn: OrderToNotifications
+      otw: OrderToWarehouse
+
 
 
 cache:

@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
     private ResponseEntity<ErrorBody> handleException(HttpStatusCode httpStatusCode, WebRequest request,Exception e) {
         return  ResponseEntity.ok(
                 ErrorBody.builder()
-                        .httpStatusCode(httpStatusCode.value())
+                        .statusCode(httpStatusCode.value())
                         .message(e.getLocalizedMessage())
                         .details(request.getDescription(true))
                         .path(request.getContextPath())

@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class DeveloperEntity extends BaseEntity {
 
+    @Column(unique = true, nullable = false,length = 20)
     private String name;
 
     @OneToMany(mappedBy = "developer",fetch = FetchType.EAGER)
