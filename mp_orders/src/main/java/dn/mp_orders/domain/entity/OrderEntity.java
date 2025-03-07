@@ -45,12 +45,14 @@ public class OrderEntity implements Serializable {
     @Column(nullable = false)
     private String status;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    private BucketEntity bucket;
+
     private Double rating;
 
     private Long countOfProducts;
 
-    @ElementCollection
-    private Set<Long> productId = new HashSet<>();
+    private Long productId;
 
     private String message;
 

@@ -53,25 +53,17 @@ public class OrderServiceImpl implements OrderService {
 
     @Value("${spring.kafka.topic.name}")
     private String OTNTopicName;
-
     @Value("${spring.kafka.topic.second_name}")
     private String OTWTopicName;
-
     @Value("${spring.kafka.topic.third_name}")
     private String OTDTopicName;
 
     private final OrderRepository orderRepository;
-
     private final ApplicationEventPublisher eventPublisher;
-
     private final OrderMapper orderMapper;
-
     private final KafkaTemplate<String, Object> kafkaTemplate;
-
     private final RestClient restClient;
-
     private final Gson gson;
-
     private final WarehouseHttpClient warehouseHttpClient;
 
 
@@ -95,7 +87,6 @@ public class OrderServiceImpl implements OrderService {
         );
     }
 
-
     @Override
     public List<OrderEntity> getOrderList() {
         return orderRepository.findAll();
@@ -116,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public BigDecimal getPriceOfProduct(Long productId) {
         var request = restClient.get()
-                .uri("http://localhost:8081/api/v1/product/{id}", productId)
+                .uri("http://localhost:8081/api/v1/product/{id}/price", productId)
                 .retrieve()
                 .body(BigDecimal.class);
         log.info("Price of product: {}", request);
@@ -249,7 +240,7 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(CREATED);
         order.setPrice(price);
         order.setCountOfProducts(countOfProducts);
-        order.setProductId(Collections.singleton(productId));
+        order.setProductId(productId);
         log.info("Saving order: {}", order);
         orderRepository.save(order);
 

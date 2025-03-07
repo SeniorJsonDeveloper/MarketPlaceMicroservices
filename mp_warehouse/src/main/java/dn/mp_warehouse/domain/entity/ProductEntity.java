@@ -30,10 +30,7 @@ public class ProductEntity extends BaseEntity{
     @Column(name = "count")
     private Long countOfProducts;
 
-    @Column(unique = true)
     private String buyerId;
-
-
 
     @ManyToOne(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE})
     @JoinColumn(name = "warehouse_id")
@@ -63,9 +60,22 @@ public class ProductEntity extends BaseEntity{
     private DeveloperEntity developer;
 
 
-
-
-
-
-
+    @Override
+    public String toString() {
+        return "ProductEntity{" +
+                "productName='" + productName + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                ", brand='" + brand + '\'' +
+                ", countOfProducts=" + countOfProducts +
+                ", buyerId='" + buyerId + '\'' +
+                ", warehouse=" + warehouse +
+                ", shop=" + shop +
+                ", events=" + events +
+                ", category=" + category +
+                ", location=" + location +
+                ", delivery=" + delivery +
+                ", developer=" + developer +
+                '}';
+    }
 }

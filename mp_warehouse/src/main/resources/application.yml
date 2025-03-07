@@ -45,6 +45,8 @@ app:
         expiry: 14d
       ordersWithPagination:
         expiry: 20m
+      products:
+        expiry: 20m
 
 integration:
   geolocation:
