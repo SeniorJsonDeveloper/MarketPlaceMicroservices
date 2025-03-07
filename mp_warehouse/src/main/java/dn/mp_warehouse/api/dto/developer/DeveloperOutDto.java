@@ -2,22 +2,15 @@ package dn.mp_warehouse.api.dto.developer;
 
 
 import dn.mp_warehouse.api.dto.location.ListLocationDto;
-import dn.mp_warehouse.api.dto.location.LocationOutDto;
-import dn.mp_warehouse.api.dto.product.ListProductDto;
-import dn.mp_warehouse.api.dto.product.ProductOutDto;
+import dn.mp_warehouse.api.dto.product.lists.ListProductDto;
 import dn.mp_warehouse.api.dto.shop.ListShopOutDto;
 import dn.mp_warehouse.api.dto.warehouse.ListWarehouseDto;
-import dn.mp_warehouse.api.dto.warehouse.WarehouseOutDto;
 import dn.mp_warehouse.domain.entity.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data

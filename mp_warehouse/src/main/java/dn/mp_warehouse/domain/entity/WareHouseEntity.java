@@ -31,7 +31,7 @@ public class WareHouseEntity extends BaseEntity {
 
     private Long shopId;
 
-    @OneToMany(mappedBy = "warehouse")
+    @OneToMany(mappedBy = "warehouse",fetch = FetchType.LAZY,orphanRemoval = true)
     private List<ProductEntity> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "warehouse")

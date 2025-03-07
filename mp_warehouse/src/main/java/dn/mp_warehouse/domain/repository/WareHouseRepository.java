@@ -17,4 +17,6 @@ public interface WareHouseRepository extends JpaRepository<WareHouseEntity, Long
 
 
 
+
+
 }

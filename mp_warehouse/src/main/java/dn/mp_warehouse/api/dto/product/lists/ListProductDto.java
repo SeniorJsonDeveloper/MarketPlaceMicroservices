@@ -1,5 +1,6 @@
-package dn.mp_warehouse.api.dto.product;
+package dn.mp_warehouse.api.dto.product.lists;
 
+import dn.mp_warehouse.api.dto.product.ProductOutDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

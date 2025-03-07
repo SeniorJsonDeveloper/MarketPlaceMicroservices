@@ -9,6 +9,6 @@ public record OrderSavedEvent(Long orderId,
                               BigDecimal price,
                               Long countOfItems,
                               Boolean isExists,
-                              Collection<Long> productIds) {
+                              Long productId) {
 
 }

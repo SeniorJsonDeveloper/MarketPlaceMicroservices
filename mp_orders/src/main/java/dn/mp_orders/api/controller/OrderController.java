@@ -31,8 +31,8 @@ public class OrderController {
     private static final String CREATE_ORDER = "/api/v1/order/create";
     private static final String GET_ORDER = "/api/v1/order/{id}";
     private static final String GET_LIST_OF_ORDERS = "/api/v1/order/list";
-    public static final String GET_PRICE_OF_PRODUCT = "/api/v1/order/product/{id}/price";
-    public static final String GET_COUNT_OF_PRODUCT = "/api/v1/order/product/{id}/count";
+    private static final String GET_PRICE_OF_PRODUCT = "/api/v1/order/product/{id}/price";
+    private static final String GET_COUNT_OF_PRODUCT = "/api/v1/order/product/{id}/count";
 
     private final OrderService orderService;
 

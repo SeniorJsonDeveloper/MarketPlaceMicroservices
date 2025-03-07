@@ -6,11 +6,11 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.mapping.Set;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 
 @Data
@@ -19,7 +19,7 @@ import java.util.List;
 @Schema(name = "OrderDto",description = "ДТО заказа")
 public class OrderDto implements Serializable {
 
-    @Schema(name = "id",description = "Входящий идентификатор заказа")
+    @Schema(name = "id",description = "Уникальный идентификатор заказа")
     private Long id;
 
     @NotBlank
@@ -34,7 +34,7 @@ public class OrderDto implements Serializable {
     @Schema(name = "status",description = "Статус заказа")
     private String status;
 
-    private Set productId;
+    private Long productId;
 
 //    @NotBlank
 //    @DecimalMin(value = "0.01", message = "Price must be at least 0.01")
